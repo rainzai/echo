@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"messenger/bluebubbles"
+	"messenger/check"
 
 	"github.com/joho/godotenv"
 )
@@ -34,7 +35,7 @@ func run(getenv func(string, string) string) error {
 		return errors.New("BLUEBUBBLES_PASSWORD is not set")
 	}
 
-	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword))
+	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), check.Fake{})
 	bb := bluebubbles.NewHandler(svc)
 
 	mux := http.NewServeMux()

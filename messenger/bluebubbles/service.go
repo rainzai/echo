@@ -3,9 +3,12 @@ package bluebubbles
 import (
 	"context"
 	"log"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
+
+	"messenger/check"
 )
 
 type Message struct {
@@ -20,16 +23,22 @@ type Message struct {
 	} `json:"chats"`
 }
 
+type Checker interface {
+	Check(ctx context.Context, req check.Request) (check.Result, error)
+}
+
 type Service struct {
 	client  *Client
+	checker Checker
 	mu      sync.Mutex
 	seen    map[string]struct{}
 	inboxes map[string][]Message
 }
 
-func NewService(client *Client) *Service {
+func NewService(client *Client, checker Checker) *Service {
 	return &Service{
 		client:  client,
+		checker: checker,
 		seen:    make(map[string]struct{}),
 		inboxes: make(map[string][]Message),
 	}
@@ -91,16 +100,51 @@ func (s *Service) Poll(ctx context.Context) {
 	}
 }
 
+var urlPattern = regexp.MustCompile(`https?://\S+`)
+
 func (s *Service) reply(chat string, msgs []Message) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	for _, m := range msgs {
-		if err := s.client.SendText(ctx, chat, m.Text); err != nil {
-			log.Printf("reply failed guid=%s: %v", m.GUID, err)
-			return
+		url := urlPattern.FindString(m.Text)
+		if url == "" {
+			if err := s.client.SendText(ctx, chat, m.Text); err != nil {
+				log.Printf("reply failed guid=%s: %v", m.GUID, err)
+				return
+			}
+			log.Printf("replied guid=%s", m.GUID)
+			continue
 		}
-		log.Printf("replied guid=%s", m.GUID)
+
+		if err := s.client.Typing(ctx, chat, true); err != nil {
+			log.Printf("typing failed chat=%s: %v", chat, err)
+		}
+		if err := s.client.React(ctx, chat, m.GUID, "like"); err != nil {
+			log.Printf("react failed guid=%s: %v", m.GUID, err)
+		}
+		go s.check(chat, check.Request{Message: m.Text, URL: url})
+	}
+}
+
+func (s *Service) check(chat string, req check.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer cancel()
+
+	text := "Sorry, I couldn't check that right now. Try again in a bit."
+	res, err := s.checker.Check(ctx, req)
+	if err != nil {
+		log.Printf("check failed url=%s: %v", req.URL, err)
+	} else {
+		text = res.Summary
+		log.Printf("checked url=%s verdict=%s", req.URL, res.Verdict)
+	}
+
+	if err := s.client.Typing(ctx, chat, false); err != nil {
+		log.Printf("typing failed chat=%s: %v", chat, err)
+	}
+	if err := s.client.SendText(ctx, chat, text); err != nil {
+		log.Printf("verdict reply failed url=%s: %v", req.URL, err)
 	}
 }
 

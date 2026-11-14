@@ -34,10 +34,10 @@ func (c *Client) SendText(ctx context.Context, chatGUID, text string) error {
 	req := sendTextRequest{
 		ChatGUID: chatGUID,
 		Message:  text,
-		Method:   "apple-script",
+		Method:   "private-api",
 		TempGUID: uuid.New().String(),
 	}
-	if err := c.post(ctx, "/api/v1/message/text", req, nil); err != nil {
+	if err := c.do(ctx, http.MethodPost, "/api/v1/message/text", req, nil); err != nil {
 		return fmt.Errorf("send text: %w", err)
 	}
 	return nil
@@ -60,24 +60,56 @@ func (c *Client) Messages(ctx context.Context, after time.Time) ([]Message, erro
 	var res struct {
 		Data []Message `json:"data"`
 	}
-	if err := c.post(ctx, "/api/v1/message/query", req, &res); err != nil {
+	if err := c.do(ctx, http.MethodPost, "/api/v1/message/query", req, &res); err != nil {
 		return nil, fmt.Errorf("query messages: %w", err)
 	}
 	return res.Data, nil
 }
 
-func (c *Client) post(ctx context.Context, path string, body, out any) error {
-	b, err := json.Marshal(body)
-	if err != nil {
-		return err
+type reactRequest struct {
+	ChatGUID            string `json:"chatGuid"`
+	SelectedMessageGUID string `json:"selectedMessageGuid"`
+	Reaction            string `json:"reaction"`
+}
+
+// React sends a tapback: love, like, dislike, laugh, emphasize or question.
+func (c *Client) React(ctx context.Context, chatGUID, messageGUID, reaction string) error {
+	req := reactRequest{ChatGUID: chatGUID, SelectedMessageGUID: messageGUID, Reaction: reaction}
+	if err := c.do(ctx, http.MethodPost, "/api/v1/message/react", req, nil); err != nil {
+		return fmt.Errorf("react: %w", err)
+	}
+	return nil
+}
+
+func (c *Client) Typing(ctx context.Context, chatGUID string, on bool) error {
+	method := http.MethodPost
+	if !on {
+		method = http.MethodDelete
+	}
+	if err := c.do(ctx, method, "/api/v1/chat/"+url.PathEscape(chatGUID)+"/typing", nil, nil); err != nil {
+		return fmt.Errorf("typing: %w", err)
+	}
+	return nil
+}
+
+func (c *Client) do(ctx context.Context, method, path string, body, out any) error {
+	var r io.Reader
+	if body != nil {
+		b, err := json.Marshal(body)
+		if err != nil {
+			return err
+		}
+		r = bytes.NewReader(b)
 	}
 
 	u := c.baseURL + path + "?password=" + url.QueryEscape(c.password)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, method, u, r)
 	if err != nil {
 		return errors.New("invalid request")
 	}
-	req.Header.Set("Content-Type", "application/json")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 
 	res, err := c.http.Do(req)
 	if err != nil {
