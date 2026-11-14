@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"log"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
 
+	"messenger/agent"
 	"messenger/check"
 	"messenger/reply"
 )
@@ -32,16 +32,18 @@ type Checker interface {
 type Service struct {
 	client  *Client
 	checker Checker
+	agent   *agent.Agent
 	mu      sync.Mutex
 	seen    map[string]struct{}
 	inboxes map[string][]Message
 	sources map[string][]check.Source
 }
 
-func NewService(client *Client, checker Checker) *Service {
+func NewService(client *Client, checker Checker, agent *agent.Agent) *Service {
 	return &Service{
 		client:  client,
 		checker: checker,
+		agent:   agent,
 		seen:    make(map[string]struct{}),
 		inboxes: make(map[string][]Message),
 		sources: make(map[string][]check.Source),
@@ -104,76 +106,100 @@ func (s *Service) Poll(ctx context.Context) {
 	}
 }
 
-var urlPattern = regexp.MustCompile(`https?://\S+`)
-
 func (s *Service) reply(chat string, msgs []Message) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel()
-
-	for _, m := range msgs {
-		if strings.EqualFold(strings.TrimSpace(m.Text), "sources") {
-			s.mu.Lock()
-			text := reply.Sources(s.sources[chat])
-			s.mu.Unlock()
-			if err := s.client.SendText(ctx, chat, text); err != nil {
-				log.Printf("reply failed guid=%s: %v", m.GUID, err)
-				return
-			}
-			continue
-		}
-
-		url := urlPattern.FindString(m.Text)
-		if url == "" {
-			if err := s.client.SendText(ctx, chat, m.Text); err != nil {
-				log.Printf("reply failed guid=%s: %v", m.GUID, err)
-				return
-			}
-			log.Printf("replied guid=%s", m.GUID)
-			continue
-		}
-
-		if err := s.client.React(ctx, chat, m.GUID, "like"); err != nil {
-			log.Printf("react failed guid=%s: %v", m.GUID, err)
-		}
-		go s.check(chat, check.Request{Query: m.Text, Country: country(m.Handle.Address)})
-	}
-}
-
-func (s *Service) check(chat string, req check.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 
-	stop := s.keepTyping(ctx, chat)
-	text := "Sorry, I couldn't check that right now. Try again in a bit."
-	res, err := s.checker.Check(ctx, req)
-	stop()
-	switch {
-	case errors.Is(err, check.ErrNoPrice):
-		text = "I couldn't find a price for that. Try sending the product name or another shop's link."
-	case err != nil:
-		log.Printf("check failed query=%q: %v", req.Query, err)
-	default:
-		text = reply.Verdict(res)
+	// texts that arrived together get one answer
+	var pending []Message
+	for _, m := range msgs {
+		if !strings.EqualFold(strings.TrimSpace(m.Text), "sources") {
+			pending = append(pending, m)
+			continue
+		}
+		if !s.talk(ctx, chat, pending) {
+			return
+		}
+		pending = nil
 		s.mu.Lock()
-		s.sources[chat] = res.Sources
+		text := reply.Sources(s.sources[chat])
 		s.mu.Unlock()
-		log.Printf("checked query=%q fake_sale=%t", req.Query, res.FakeSale)
+		if err := s.client.SendText(ctx, chat, text); err != nil {
+			log.Printf("reply failed guid=%s: %v", m.GUID, err)
+			return
+		}
+	}
+	s.talk(ctx, chat, pending)
+}
+
+func (s *Service) talk(ctx context.Context, chat string, msgs []Message) bool {
+	if len(msgs) == 0 {
+		return true
+	}
+	last := msgs[len(msgs)-1]
+	texts := make([]string, len(msgs))
+	for i, m := range msgs {
+		texts[i] = m.Text
+	}
+
+	stop := s.keepTyping(ctx, chat, 0)
+	defer func() { stop() }()
+
+	var checked *check.Result
+	text, err := s.agent.Reply(ctx, agent.Turn{
+		Chat:    chat,
+		Text:    strings.Join(texts, "\n"),
+		Country: country(last.Handle.Address),
+		Check: func(ctx context.Context, req check.Request) (check.Result, error) {
+			// the tapback clears the typing bubble, so start it again after
+			stop()
+			if err := s.client.React(ctx, chat, last.GUID, "like"); err != nil {
+				log.Printf("react failed guid=%s: %v", last.GUID, err)
+			}
+			stop = s.keepTyping(ctx, chat, 1500*time.Millisecond)
+
+			res, err := s.checker.Check(ctx, req)
+			switch {
+			case errors.Is(err, check.ErrNoPrice):
+				log.Printf("no price query=%q", req.Query)
+			case err != nil:
+				log.Printf("check failed query=%q: %v", req.Query, err)
+			default:
+				log.Printf("checked query=%q country=%s price=%.2f", req.Query, req.Country, res.Price)
+				checked = &res
+				s.mu.Lock()
+				s.sources[chat] = res.Sources
+				s.mu.Unlock()
+			}
+			return res, err
+		},
+	})
+	stop()
+	if err != nil {
+		log.Printf("talk failed chat=%s: %v", chat, err)
+		text = "Sorry, I lost my train of thought. Could you send that again?"
+		if checked != nil {
+			text = reply.Verdict(*checked)
+		}
 	}
 
 	if err := s.client.Typing(ctx, chat, false); err != nil {
 		log.Printf("typing failed chat=%s: %v", chat, err)
 	}
 	if err := s.client.SendText(ctx, chat, text); err != nil {
-		log.Printf("verdict reply failed chat=%s: %v", chat, err)
+		log.Printf("reply failed chat=%s: %v", chat, err)
+		return false
 	}
+	log.Printf("replied chat=%s", chat)
+	return true
 }
 
-// keepTyping waits for the tapback to land (it clears the bubble), then toggles
-// typing off and on so iMessage gets a fresh signal each round
-func (s *Service) keepTyping(ctx context.Context, chat string) func() {
+// keepTyping waits first (after a tapback, so it doesn't clear the bubble), then
+// toggles typing off and on so iMessage gets a fresh signal each round
+func (s *Service) keepTyping(ctx context.Context, chat string, first time.Duration) func() {
 	ctx, cancel := context.WithCancel(ctx)
 	go func() {
-		wait := 1500 * time.Millisecond
+		wait := first
 		for {
 			select {
 			case <-ctx.Done():

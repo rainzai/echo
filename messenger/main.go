@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"messenger/agent"
 	"messenger/bluebubbles"
 	"messenger/check"
 
@@ -30,10 +31,16 @@ func run(getenv func(string, string) string) error {
 		bbURL      = getenv("BLUEBUBBLES_URL", "http://127.0.0.1:1234")
 		bbPassword = getenv("BLUEBUBBLES_PASSWORD", "")
 		checkURL   = getenv("DEALCHECK_URL", "")
+		geminiKey  = getenv("GEMINI_API_KEY", "")
+		model      = getenv("GEMINI_MODEL", "gemini-4-hydrogen")
+		thinking   = getenv("GEMINI_THINKING", "low")
 	)
 
 	if bbPassword == "" {
 		return errors.New("BLUEBUBBLES_PASSWORD is not set")
+	}
+	if geminiKey == "" {
+		return errors.New("GEMINI_API_KEY is not set")
 	}
 
 	var checker bluebubbles.Checker = check.Fake{}
@@ -43,7 +50,7 @@ func run(getenv func(string, string) string) error {
 		log.Println("DEALCHECK_URL not set, using fake checks")
 	}
 
-	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), checker)
+	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), checker, agent.New(agent.NewGemini(geminiKey, model, thinking)))
 	bb := bluebubbles.NewHandler(svc)
 
 	mux := http.NewServeMux()
