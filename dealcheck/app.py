@@ -28,8 +28,8 @@ def diff(price, other):
 
 class CheckRequest(BaseModel):
     query: str
-    # where the user lives, not where the shop is
-    country: str = Field(pattern="^[A-Za-z]{2}$")
+    # where the user lives, not where the shop is; none searches everywhere
+    country: str | None = Field(None, pattern="^[A-Za-z]{2}$")
     url: str | None = None
     # where the user saw it, other shops are still compared
     shop: str | None = None
@@ -41,7 +41,7 @@ def domain(name):
 
 @app.post("/check")
 def check(req: CheckRequest):
-    country = "GB" if req.country.upper() == "UK" else req.country.upper()
+    country = req.country and ("GB" if req.country.upper() == "UK" else req.country.upper())
     link = req.url or ((m := LINK.search(req.query)) and m.group())
     today = None
     query = req.query
@@ -58,12 +58,12 @@ def check(req: CheckRequest):
     if condition != "new":
         query = f"{query} {condition}"
     local_job = pool.submit(exa_client.search, query, country)
-    world_job = pool.submit(exa_client.search, query)
+    world_job = pool.submit(exa_client.search, query) if country else None
     if not today and req.shop:
         seen = [o for o in exa_client.search(query, country, domain(req.shop)) if fits(o)]
         today = next(filter(None, pool.map(exa_client.page, [o["url"] for o in seen[:2]])), None)
     local = local_job.result()
-    world = [o for o in world_job.result() if o["url"] not in {l["url"] for l in local}][:WORLDWIDE]
+    world = [o for o in world_job.result() if o["url"] not in {l["url"] for l in local}][:WORLDWIDE] if world_job else []
     found = local + world
     local_urls = {o["url"] for o in local}
     if not today:
