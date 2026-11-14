@@ -9,7 +9,7 @@ import exa_client
 
 if __name__ == "__main__":
     rows = [r for r in csv.DictReader(open(HERE / "golden.csv")) if r["url"] and r["expected_price"]]
-    right = wrong = 0
+    right = wrong = flagged = 0
     for r in rows:
         want = float(r["expected_price"])
         try:
@@ -21,7 +21,12 @@ if __name__ == "__main__":
             mark = "NO PRICE"
         elif abs(got["price"] - want) < 0.01 and got["currency"] == r["currency"]:
             mark, right = "OK", right + 1
+        # wrong but marked as doubtful is less bad than wrong and sure
+        elif got["doubt"] not in (None, "unverified"):
+            mark, flagged = "FLAGGED", flagged + 1
         else:
             mark, wrong = "WRONG", wrong + 1
-        print(f"{r['country']} {r['shop']:<17} want {want:>7} {r['currency']} | got {got['price'] if got else '':>7} {mark}")
-    print(f"\n{right}/{len(rows)} correct, {wrong} wrong, {len(rows) - right - wrong} no price")
+        doubt = got and got["doubt"] or ""
+        print(f"{r['country']} {r['shop']:<17} want {want:>7} {r['currency']} | got {got['price'] if got else '':>7} {mark} {doubt}")
+    print(f"\n{right}/{len(rows)} correct, {wrong} wrong, {flagged} wrong but flagged, "
+          f"{len(rows) - right - wrong - flagged} no price")
