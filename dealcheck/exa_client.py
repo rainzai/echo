@@ -19,8 +19,13 @@ SCHEMA = {
                   "A comma can be the decimal sign, and ',-' means no cents. "
                   "0 if the page text doesn't show this product's price."},
         "currency": {"type": "string", "description": "ISO currency code, e.g. EUR"},
+        "was_price": {"type": "number", "description": "The higher old price the page shows with the current price "
+                      "to claim a discount on this product: crossed-out, 'was', list or advice price. "
+                      "0 if the page shows none."},
+        "discount_percent": {"type": "number", "description": "The discount percentage the page shows for this product, "
+                             "as a positive number. 0 if the page shows none."},
     },
-    "required": ["product_name", "price", "currency"],
+    "required": ["product_name", "price", "currency", "was_price", "discount_percent"],
 }
 PRICE_QUESTION = "What is this product's selling price right now?"
 CONTENTS = {"text": True, "summary": {"query": PRICE_QUESTION, "schema": SCHEMA}}
@@ -37,11 +42,20 @@ def to_offer(page):
         return None
     info = json.loads(page.summary)
     # skip made up prices
-    if not info.get("price") or not in_text(info["price"], page.text or ""):
+    text = page.text or ""
+    if not info.get("price") or not in_text(info["price"], text):
         return None
+    was = info.get("was_price") or 0
+    was = was if was > info["price"] and in_text(was, text) else None
+    percent = round(info.get("discount_percent") or 0)
+    if was:
+        percent = round((was - info["price"]) / was * 100)
+    elif not re.search(rf"(?<!\d){percent}\s?%", text):
+        percent = 0
     when = page.crawl_date
     return {"url": page.url, "price": info["price"], "currency": info["currency"],
-            "name": info.get("product_name"), "date": when[:10] if when else None}
+            "name": info.get("product_name"), "date": when[:10] if when else None,
+            "claimed_price": was, "claimed_discount": percent or None}
 
 # local word for buy, gets local shops
 BUY = {"NL": "kopen", "BE": "kopen", "FI": "osta", "DE": "kaufen", "GB": "buy"}

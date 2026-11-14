@@ -27,8 +27,10 @@ def low_30d(points, today):
     prices = [p["price"] for p in points if since <= p["date"] < today["date"]]
     return min(prices) if prices else None
 
+# the page claims a discount but it was already this cheap
 def is_fake_sale(today, low):
-    return low is not None and low <= today["price"]
+    claims = bool(today["claimed_price"] or today["claimed_discount"])
+    return claims and low is not None and low <= today["price"]
 
 if __name__ == "__main__":
     # testable
