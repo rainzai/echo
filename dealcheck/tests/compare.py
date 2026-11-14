@@ -1,12 +1,14 @@
-# run from dealcheck: uv run python tests/compare.py
+# run: uv run python tests/compare.py
 import csv
 import sys
+from pathlib import Path
 
-sys.path.insert(0, ".")
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
 import exa_client
 
 if __name__ == "__main__":
-    rows = [r for r in csv.DictReader(open("tests/golden.csv")) if r["url"] and r["expected_price"]]
+    rows = [r for r in csv.DictReader(open(HERE / "golden.csv")) if r["url"] and r["expected_price"]]
     right = wrong = 0
     for r in rows:
         want = float(r["expected_price"])
