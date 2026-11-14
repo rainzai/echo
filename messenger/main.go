@@ -4,36 +4,47 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"messenger/bluebubbles"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load("../.env")
+	if err := run(getenv); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run(getenv func(string, string) string) error {
+	var (
+		addr       = "127.0.0.1:" + getenv("PORT", "8080")
+		bbURL      = getenv("BLUEBUBBLES_URL", "http://127.0.0.1:1234")
+		bbPassword = getenv("BLUEBUBBLES_PASSWORD", "")
+	)
+
+	if bbPassword == "" {
+		return errors.New("BLUEBUBBLES_PASSWORD is not set")
+	}
+
+	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword))
+	bb := bluebubbles.NewHandler(svc)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("OK"))
 	})
-	mux.HandleFunc("POST /webhook", func(w http.ResponseWriter, r *http.Request) {
-		txt, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
-		if err != nil {
-			if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
-				http.Error(w, "REQUEST_SIZE", http.StatusRequestEntityTooLarge)
-				return
-			}
-
-			http.Error(w, "INTERNAL_ERROR", http.StatusInternalServerError)
-			return
-		}
-
-		log.Print(string(txt))
-	})
+	mux.HandleFunc("POST /webhook", bb.Webhook)
 
 	s := &http.Server{
-		Addr:              "127.0.0.1:8080",
+		Addr:              addr,
 		Handler:           mux,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      10 * time.Second,
@@ -46,6 +57,8 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
+	go svc.Poll(ctx)
+
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errs <- fmt.Errorf("server shut down: %v", err)
@@ -57,17 +70,26 @@ func main() {
 	select {
 	case <-ctx.Done():
 		log.Println("Shutting down server...")
-		stop()
 	case err := <-errs:
-		log.Fatal(err)
+		return err
 	}
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := s.Shutdown(shutdownCtx); err != nil {
-		log.Fatalf("server forced to shut down: %v", err)
+	if err := s.Shutdown(ctx); err != nil {
+		return fmt.Errorf("server forced to shut down: %v", err)
 	}
 
-	log.Print("Server stopped")
+	return nil
+}
+
+func getenv(k, dv string) string {
+	v := os.Getenv(k)
+
+	if v == "" {
+		return dv
+	}
+
+	return v
 }

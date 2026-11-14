@@ -4,6 +4,8 @@ go 1.27.3
 
 tool github.com/air-verse/air
 
+require github.com/joho/godotenv v1.5.1
+
 require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/air-verse/air v1.67.4 // indirect
@@ -17,7 +19,6 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gohugoio/hashstructure v0.6.0 // indirect
 	github.com/gohugoio/hugo v0.164.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
