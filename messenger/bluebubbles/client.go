@@ -55,7 +55,7 @@ func (c *Client) Messages(ctx context.Context, after time.Time) ([]Message, erro
 		After: after.UnixMilli(),
 		Limit: 100,
 		Sort:  "ASC",
-		With:  []string{"chat", "handle"},
+		With:  []string{"chat", "handle", "attachment"},
 	}
 	var res struct {
 		Data []Message `json:"data"`
@@ -64,6 +64,15 @@ func (c *Client) Messages(ctx context.Context, after time.Time) ([]Message, erro
 		return nil, fmt.Errorf("query messages: %w", err)
 	}
 	return res.Data, nil
+}
+
+// Attachment downloads a file, BlueBubbles converts HEIC photos to JPEG
+func (c *Client) Attachment(ctx context.Context, guid string) ([]byte, error) {
+	var b []byte
+	if err := c.do(ctx, http.MethodGet, "/api/v1/attachment/"+url.PathEscape(guid)+"/download", nil, &b); err != nil {
+		return nil, fmt.Errorf("download attachment: %w", err)
+	}
+	return b, nil
 }
 
 type reactRequest struct {
@@ -126,8 +135,13 @@ func (c *Client) do(ctx context.Context, method, path string, body, out any) err
 		return fmt.Errorf("%s: %s", res.Status, msg)
 	}
 
-	if out == nil {
+	switch out := out.(type) {
+	case nil:
 		return nil
+	case *[]byte:
+		*out, err = io.ReadAll(io.LimitReader(res.Body, 20<<20))
+		return err
+	default:
+		return json.NewDecoder(res.Body).Decode(out)
 	}
-	return json.NewDecoder(res.Body).Decode(out)
 }

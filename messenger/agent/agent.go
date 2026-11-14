@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"strings"
 	"sync"
 
 	"messenger/check"
@@ -55,20 +57,33 @@ type Turn struct {
 	Chat    string
 	Text    string
 	Country string // from the phone number, empty if unknown
+	Images  [][]byte
 	Check   func(ctx context.Context, req check.Request) (check.Result, error)
 }
 
 type Agent struct {
 	model   Model
+	vision  *Vision
 	mu      sync.Mutex
 	history map[string][]Message
 }
 
-func New(model Model) *Agent {
-	return &Agent{model: model, history: make(map[string][]Message)}
+func New(model Model, vision *Vision) *Agent {
+	return &Agent{model: model, vision: vision, history: make(map[string][]Message)}
 }
 
 func (a *Agent) Reply(ctx context.Context, t Turn) (string, error) {
+	// the vision model reads photos first, its answer becomes part of the message
+	for _, img := range t.Images {
+		seen, err := a.vision.Look(ctx, img)
+		if err != nil {
+			log.Printf("vision failed chat=%s: %v", t.Chat, err)
+			seen = `{"error": "couldn't read the photo"}`
+		}
+		log.Printf("vision chat=%s: %s", t.Chat, seen)
+		t.Text = strings.TrimSpace(t.Text + "\n[photo: " + seen + "]")
+	}
+
 	a.mu.Lock()
 	history := append(append([]Message{}, a.history[t.Chat]...), Message{Role: RoleUser, Text: t.Text})
 	a.mu.Unlock()

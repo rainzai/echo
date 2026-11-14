@@ -34,6 +34,8 @@ func run(getenv func(string, string) string) error {
 		geminiKey  = getenv("GEMINI_API_KEY", "")
 		model      = getenv("GEMINI_MODEL", "gemini-4-hydrogen")
 		thinking   = getenv("GEMINI_THINKING", "low")
+		nvidiaKey  = getenv("NVIDIA_API_KEY", "")
+		vlModel    = getenv("NEMOTRON_MODEL", "nvidia/nemotron-3.5-super-vl-120b-a12b")
 	)
 
 	if bbPassword == "" {
@@ -41,6 +43,9 @@ func run(getenv func(string, string) string) error {
 	}
 	if geminiKey == "" {
 		return errors.New("GEMINI_API_KEY is not set")
+	}
+	if nvidiaKey == "" {
+		return errors.New("NVIDIA_API_KEY is not set")
 	}
 
 	var checker bluebubbles.Checker = check.Fake{}
@@ -50,7 +55,7 @@ func run(getenv func(string, string) string) error {
 		log.Println("DEALCHECK_URL not set, using fake checks")
 	}
 
-	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), checker, agent.New(agent.NewGemini(geminiKey, model, thinking)))
+	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), checker, agent.New(agent.NewGemini(geminiKey, model, thinking), agent.NewVision(nvidiaKey, vlModel)))
 	bb := bluebubbles.NewHandler(svc)
 
 	mux := http.NewServeMux()

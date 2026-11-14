@@ -14,15 +14,32 @@ import (
 )
 
 type Message struct {
-	GUID     string `json:"guid"`
-	Text     string `json:"text"`
-	IsFromMe bool   `json:"isFromMe"`
-	Handle   struct {
+	GUID        string       `json:"guid"`
+	Text        string       `json:"text"`
+	IsFromMe    bool         `json:"isFromMe"`
+	Attachments []Attachment `json:"attachments"`
+	Handle      struct {
 		Address string `json:"address"`
 	} `json:"handle"`
 	Chats []struct {
 		GUID string `json:"guid"`
 	} `json:"chats"`
+}
+
+type Attachment struct {
+	GUID     string `json:"guid"`
+	MimeType string `json:"mimeType"`
+}
+
+// images skips link previews, they have no mime type
+func (m Message) images() []Attachment {
+	var out []Attachment
+	for _, a := range m.Attachments {
+		if strings.HasPrefix(a.MimeType, "image/") {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 type Checker interface {
@@ -66,11 +83,11 @@ func (s *Service) HandleMessage(m Message, via string) {
 
 	// attachments and app bubbles show up as U+FFFC in the text
 	m.Text = strings.TrimSpace(strings.ReplaceAll(m.Text, "￼", ""))
-	if m.Text == "" {
+	if m.Text == "" && len(m.images()) == 0 {
 		return
 	}
 
-	log.Printf("message guid=%s via=%s chat=%s text=%q", m.GUID, via, m.Chats[0].GUID, m.Text)
+	log.Printf("message guid=%s via=%s chat=%s text=%q images=%d", m.GUID, via, m.Chats[0].GUID, m.Text, len(m.images()))
 	s.enqueue(m)
 }
 
@@ -137,19 +154,31 @@ func (s *Service) talk(ctx context.Context, chat string, msgs []Message) bool {
 		return true
 	}
 	last := msgs[len(msgs)-1]
-	texts := make([]string, len(msgs))
-	for i, m := range msgs {
-		texts[i] = m.Text
-	}
-
 	stop := s.keepTyping(ctx, chat, 0)
 	defer func() { stop() }()
+
+	var texts []string
+	var images [][]byte
+	for _, m := range msgs {
+		if m.Text != "" {
+			texts = append(texts, m.Text)
+		}
+		for _, a := range m.images() {
+			img, err := s.client.Attachment(ctx, a.GUID)
+			if err != nil {
+				log.Printf("download failed guid=%s: %v", a.GUID, err)
+				continue
+			}
+			images = append(images, img)
+		}
+	}
 
 	var checked *check.Result
 	text, err := s.agent.Reply(ctx, agent.Turn{
 		Chat:    chat,
 		Text:    strings.Join(texts, "\n"),
 		Country: country(last.Handle.Address),
+		Images:  images,
 		Check: func(ctx context.Context, req check.Request) (check.Result, error) {
 			// the tapback clears the typing bubble, so start it again after
 			stop()
