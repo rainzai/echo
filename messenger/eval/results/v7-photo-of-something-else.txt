@@ -1,0 +1,53 @@
+OK   charger.jpg              
+      None | power adapter | None | None | price None old None | confident False | others []
+2/5  airpods-case.jpg         confident True
+      VIVOR SACHA | AirPods case | None | None | price None old None | confident True | others []
+OK   two-bottles.jpg          
+      bon aqua | Villivadelma Kupiliva | None | None | price None old None | confident True | others ['Pirkka Suomalainen Lähdevesi']
+OK   macbook-lid.jpg          
+      Apple | MacBook | None | None | price None old None | confident False | others []
+OK   fazer-gingerbread.jpg    
+      Fazer | Piparkakku Pepparkakor Gingerbread with orange flavour | None | None | price None old None | confident True | others []
+OK   chupa-chups.jpg          
+      Chupa Chups | Stranger Things Mystery Flavours lollipops | None | 5-pack | price None old None | confident True | others []
+OK   kitkat-mini.jpg          
+      Nestlé | KitKat | None | mini | price None old None | confident True | others []
+OK   hell-energy.jpg          
+      HELL | Energy Drink | None | Classic, 250 ml can | price None old None | confident True | others []
+OK   marktplaats-audi.jpg     
+      Audi | Q3 1.4 TFSI S-Line | None | None | price 19900 old None | confident True | others []
+OK   marktplaats-nike.jpg     
+      Nike | Air Max 1 '86 OG Big Bubble Air Max Day | None | maat 40.5 | price 150.0 old None | confident True | others []
+OK   bol-meccano.jpg          
+      Meccano | Supercar | 25202 | 25 in 1 | price 50.99 old 54.95 | confident True | others []
+OK   ah-shelf-tag.jpg         
+      AH | Zaans huisje wit | None | 125 GR | price 0.69 old None | confident True | others []
+OK   instagram-sumup.jpg      
+      SumUp | card reader / payment terminal | None | None | price None old None | confident False | others []
+OK   mediamarkt-two.jpg       
+      HYPERX | Cloud Stinger 2, Over-ear Gaming Headset Schwarz | None | None | price 57.99 old 69.99 | confident True | others ['RAZER Tarok Essentials X Cloth Gaming Stuhl']
+1/5  coolblue-iphone.jpg      confident True
+      Apple | iPhone 17 | None | 256GB Blue | price 1039 old 1119 | confident True | others ['Samsung Galaxy S25 256GB Dark Blue 5G']
+4/5  cat-adidas-cap.jpg       confident True
+      adidas | cap | None | None | price None old None | confident False | others []
+4/5  sony-xm5-box.jpg         missing '1000xm5'
+      Sony | Wireless Noise Canceling Stereo Headset | WH-1000XM5 | None | price None old None | confident True | others []
+OK   sprite-6-pack.jpg        
+      Sprite | Pineapple Coconut Refresh Lemon-Lime Soda | None | 6-pack, 16.9 fl oz bottles | price None old None | confident True | others []
+OK   three-snacks.jpg         
+      Chupa Chups | Stranger Things lollipops | None | 5-pack | price None old None | confident True | others ['Dr Pepper Zero Sugar', 'Oreo Original']
+OK   drpepper-label.jpg       
+      Dr Pepper | Virvoitusjuoma Läske dryck | None | 50 cl | price None old None | confident True | others []
+OK   blurry-bottle.jpg        
+      None | None | None | None | price None old None | confident False | others []
+
+96/105 right, 5 wrong while confident, 3.3s avg
+  no model visible  12/15
+  tricky            15/15
+  easy              15/15
+  multipack         10/10
+  screenshot        26/30
+  not a product     4/5
+  model on box      4/5
+  label close-up    5/5
+  blurry            5/5

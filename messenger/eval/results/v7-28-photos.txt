@@ -1,0 +1,67 @@
+OK   charger.jpg              
+      None | power adapter | None | None | price None old None | confident False | others []
+2/5  airpods-case.jpg         confident True
+      VIVOR SACHA | AirPods case | None | None | price None old None | confident True | others []
+4/5  two-bottles.jpg          confident True
+      bon aqua | Villivadelma Kupiliva | None | None | price None old None | confident True | others ['Pirkka Suomalainen Lähdevesi']
+OK   macbook-lid.jpg          
+      Apple | MacBook | None | None | price None old None | confident False | others []
+OK   fazer-gingerbread.jpg    
+      Fazer | Piparkakku Pepparkakor Gingerbread with orange flavour | None | None | price None old None | confident True | others []
+OK   chupa-chups.jpg          
+      Chupa Chups | Stranger Things lollipop | None | 5-pack | price None old None | confident True | others []
+OK   kitkat-mini.jpg          
+      Nestlé | KitKat | None | mini | price None old None | confident True | others []
+OK   hell-energy.jpg          
+      HELL | Energy Drink | None | Classic, 250 ml | price None old None | confident True | others []
+OK   marktplaats-audi.jpg     
+      Audi | Q3 1.4 TFSI S-Line | None | Trekhaak | Xenon | 18 Inch | price 19900 old None | confident True | others []
+OK   marktplaats-nike.jpg     
+      Nike | Air Max 1 '86 OG Big Bubble Air Max Day | None | maat 40.5 | price 150.0 old None | confident True | others []
+OK   bol-meccano.jpg          
+      Meccano | Supercar | 25202 | 25 in 1 | price 50.99 old 54.95 | confident True | others []
+OK   ah-shelf-tag.jpg         
+      AH | Zaans huisje wit | None | 125 GR | price 0.69 old None | confident True | others []
+OK   instagram-sumup.jpg      
+      sumup | card reader | None | None | price None old None | confident False | others []
+OK   mediamarkt-two.jpg       
+      HYPERX | Cloud Stinger 2, Over-ear Gaming Headset Schwarz | None | None | price 57.99 old 69.99 | confident True | others ['RAZER Tarok Essentials X Cloth Gaming Stuhl']
+3/5  coolblue-iphone.jpg      confident True
+      Apple | iPhone 17 | None | 256GB Blue | price 1039 old 1119 | confident True | others []
+OK   cat-adidas-cap.jpg       
+      adidas | cap | None | None | price None old None | confident False | others []
+4/5  sony-xm5-box.jpg         missing '1000xm5'
+      Sony | Wireless Noise Canceling Stereo Headset | WH-1000XM5 | None | price None old None | confident True | others []
+OK   sprite-6-pack.jpg        
+      Sprite | Pineapple Coconut Refresh Lemon-Lime Soda | None | 6-pack | price None old None | confident True | others []
+OK   three-snacks.jpg         
+      Chupa Chups | Stranger Things lollipops | None | 5-pack | price None old None | confident True | others ['Dr Pepper Zero Sugar', 'Oreo Original']
+OK   drpepper-label.jpg       
+      Dr Pepper | Virvoitusjuoma Läske dryck | None | 50 cl | price None old None | confident True | others []
+OK   blurry-bottle.jpg        
+      None | None | None | None | price None old None | confident False | others []
+OK   akg-k52-box.jpg          
+      AKG | Closed-back headphones | K52 | None | price None old None | confident True | others []
+0/5  framework-open.jpg       confident True
+      Framework | Laptop battery | FRANDZGT91 | 50Wh | price None old None | confident True | others []
+OK   portrait.jpg             
+      None | None | None | None | price None old None | confident False | others []
+OK   desk-setup.jpg           
+      None | computer monitor | None | None | price None old None | confident False | others []
+OK   iphone11-box.jpg         
+      Apple | iPhone 11 | A2111 | Black, 64GB | price None old None | confident True | others []
+OK   warehouse-label.jpg      
+      None | None | None | None | price None old None | confident False | others []
+OK   xylichew-back.jpg        
+      Xylichew | Xylitol chewing gum | None | 12 pieces, 1.3 g each | price None old None | confident True | others []
+
+128/140 right, 10 wrong while confident, 3.6s avg
+  no model visible  12/15
+  tricky            19/25
+  easy              15/15
+  multipack         10/10
+  screenshot        28/30
+  not a product     10/10
+  model on box      14/15
+  label close-up    15/15
+  blurry            5/5

@@ -1,0 +1,36 @@
+OK   charger.jpg              
+      None | power adapter | None | None | price None old None | confident False
+OK   airpods-case.jpg         
+      None | AirPods case | None | None | price None old None | confident False
+2/3  two-bottles.jpg          confident True
+      bon aqua | Villivadelma Kupiliva sparkling water | None | None | price None old None | confident False
+OK   macbook-lid.jpg          
+      Apple | MacBook | None | None | price None old None | confident False
+OK   fazer-gingerbread.jpg    
+      Fazer | Piparkakku / Pepparkakor Gingerbread with orange flavour | None | Fazerina | price None old None | confident True
+OK   chupa-chups.jpg          
+      Chupa Chups | Stranger Things lollipop | None | None | price None old None | confident True
+OK   kitkat-mini.jpg          
+      Nestlé | KitKat | None | mini | price None old None | confident True
+OK   hell-energy.jpg          
+      HELL | Energy Drink | None | Classic | price None old None | confident True
+OK   marktplaats-audi.png     
+      Audi | Q3 1.4 TFSI S-Line | None | Trekkhaak | Xenon | 18 Inch | price 19900 old None | confident True
+OK   marktplaats-nike.png     
+      Nike | Air Max 1 '86 OG Big Bubble Air Max Day | None | 40.5 | price 150.0 old None | confident True
+0/3  bol-meccano.png          made up model '25 in 1'; made up model '25282'
+      Meccano | Supercar | 25 in 1 | None | price 50.99 old 54.95 | confident True
+OK   ah-shelf-tag.png         
+      AH | Zaans huisje wit | None | 125 GR | price 0.69 old None | confident True
+OK   instagram-sumup.png      
+      SumUp | card reader / payment terminal | None | None | price None old None | confident True
+0/3  mediamarkt-two.png       confident True
+      HYPERX | Cloud Stinger 2, Over-ear Gaming Headset Schwarz | None | None | price 57.99 old 69.99 | confident True
+OK   coolblue-iphone.png      
+      Apple | iPhone 17 | 256GB | Blue | price 1039 old 1119 | confident True
+
+38/45 right, 7 wrong while confident, 3.2s avg
+  no model visible  9/9
+  tricky            2/6
+  easy              12/12
+  screenshot        15/18

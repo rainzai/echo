@@ -1,0 +1,36 @@
+OK   charger.jpg              
+      None | power adapter | None | None | price None old None | confident False | others []
+OK   airpods-case.jpg         
+      None | AirPods case | None | None | price None old None | confident False | others []
+OK   two-bottles.jpg          
+      Pirkka | Suomalainen Lähdevesi | None | None | price None old None | confident True | others ['bon aqua']
+OK   macbook-lid.jpg          
+      Apple | MacBook | None | None | price None old None | confident False | others []
+OK   fazer-gingerbread.jpg    
+      Fazer | Piparkakku / Pepparkakor Gingerbread with orange flavour | None | Fazerina | price None old None | confident True | others []
+OK   chupa-chups.jpg          
+      Chupa Chups | Stranger Things Mystery Flavours lollipop | None | None | price None old None | confident True | others []
+OK   kitkat-mini.jpg          
+      Nestlé | KitKat | None | mini | price None old None | confident True | others []
+OK   hell-energy.jpg          
+      HELL | Energy Drink Classic | None | Classic | price None old None | confident True | others []
+OK   marktplaats-audi.png     
+      Audi | Q3 1.4 TFSI S-Line | None | Trekkhaak | Xenon | 18 Inch | price 19900 old None | confident True | others []
+OK   marktplaats-nike.png     
+      Nike | Air Max 1 '86 OG Big Bubble Air Max Day | None | 40.5 | price 150.0 old None | confident True | others []
+0/3  bol-meccano.png          made up model '25802'; made up model '25982'
+      Meccano | Supercar | 25802 | 25 in 1 | price 50.99 old 54.95 | confident True | others []
+OK   ah-shelf-tag.png         
+      AH | Zaans huisje wit | None | 125 GR | price 0.69 old None | confident True | others []
+OK   instagram-sumup.png      
+      SumUp | card reader | None | None | price None old None | confident True | others []
+OK   mediamarkt-two.png       
+      HYPERX | Cloud Stinger 2, Over-ear Gaming Headset Schwarz | None | None | price 57.99 old 69.99 | confident True | others ['RAZER Tarok Essentials X Cloth Gaming Stuhl']
+OK   coolblue-iphone.png      
+      Apple | iPhone 17 256GB Blue | None | 256GB Blue | price 1039 old 1119 | confident True | others []
+
+42/45 right, 3 wrong while confident, 3.2s avg
+  no model visible  9/9
+  tricky            6/6
+  easy              12/12
+  screenshot        15/18
