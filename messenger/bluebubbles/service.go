@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nyaruka/phonenumbers"
+
 	"messenger/agent"
 	"messenger/check"
 	"messenger/reply"
@@ -244,16 +246,13 @@ func (s *Service) keepTyping(ctx context.Context, chat string, first time.Durati
 	return cancel
 }
 
-// country guesses from the phone prefix, only used when nothing better is known
+// country from the phone number, empty for email addresses
 func country(address string) string {
-	for prefix, code := range map[string]string{
-		"+31": "NL", "+32": "BE", "+33": "FR", "+44": "GB", "+49": "DE", "+358": "FI", "+1": "US",
-	} {
-		if strings.HasPrefix(address, prefix) {
-			return code
-		}
+	n, err := phonenumbers.Parse(address, "")
+	if err != nil {
+		return ""
 	}
-	return ""
+	return phonenumbers.GetRegionCodeForNumber(n)
 }
 
 func (s *Service) markSeen(guid string) bool {

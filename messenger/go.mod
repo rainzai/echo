@@ -6,6 +6,7 @@ tool github.com/air-verse/air
 
 require (
 	github.com/joho/godotenv v1.5.1
+	github.com/nyaruka/phonenumbers v1.8.1
 	golang.org/x/image v0.48.0
 )
 
