@@ -223,8 +223,7 @@ func (s *Service) talk(ctx context.Context, chat string, msgs []Message) bool {
 	return true
 }
 
-// keepTyping waits first (after a tapback, so it doesn't clear the bubble), then
-// toggles typing off and on so iMessage gets a fresh signal each round
+// keepTyping waits first so a tapback doesn't clear it, then re-sends typing every few seconds
 func (s *Service) keepTyping(ctx context.Context, chat string, first time.Duration) func() {
 	ctx, cancel := context.WithCancel(ctx)
 	go func() {

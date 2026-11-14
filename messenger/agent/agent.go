@@ -133,8 +133,7 @@ func (a *Agent) run(ctx context.Context, t Turn, c *Call) map[string]any {
 	return facts(res)
 }
 
-// trim keeps the newest messages, starting at a user text so a tool call is
-// never cut off from its result
+// trim never cuts a tool call off from its result
 func trim(history []Message) []Message {
 	if len(history) <= maxHistory {
 		return history

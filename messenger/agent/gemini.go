@@ -141,8 +141,7 @@ func (g *Gemini) Generate(ctx context.Context, system string, tools []Tool, hist
 	return m, nil
 }
 
-// contents maps our history to gemini's roles: echo is "model", and tool
-// results go back as a "user" part
+// contents maps our history to gemini's roles, echo is "model"
 func contents(history []Message) []content {
 	out := make([]content, 0, len(history))
 	for _, m := range history {

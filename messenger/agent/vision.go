@@ -18,17 +18,24 @@ import (
 	"golang.org/x/image/draw"
 )
 
-// photos are shrunk before sending, full size is slower and reads worse
-const maxSide = 1024
+// 1024 was too small to read model numbers
+const maxSide = 1536
 
 const visionPrompt = `Someone sent this photo or screenshot to a deal checker. Identify the product so its price can be looked up.
 Answer with JSON only:
 {"brand": str|null, "product": str|null, "model": str|null, "variant": str|null,
  "price": number|null, "currency": str|null, "claimed_old_price": number|null, "claimed_discount": str|null,
- "shop": str|null, "visible_text": [str], "confident": bool, "missing": str|null}
+ "shop": str|null, "other_products": [str], "visible_text": [str], "confident": bool, "missing": str|null}
 - Only use what you can see. Never guess a model number or price that isn't visible.
+- model: only a model or article number you can read exactly, character by character, else null.
+- variant: size, colour, flavour, and always the pack size when it's more than one, e.g. "6-pack", "5 x 12 g".
+- other_products: other products that have their own price shown, or, when no prices are shown,
+  are just as large as the main one. Leave out anything without a price that is behind, beside
+  or cut off from the main product.
 - visible_text: the important words printed on the product or screen.
 - confident: true only if brand and product are clear enough to search for this exact item.
+- If the photo is mainly of something else (a pet, a person, a room) and a product only appears in it,
+  confident is false and missing asks whether that product is what they want checked.
 - missing: what you'd need to be sure, e.g. "model number, usually on a sticker underneath".`
 
 type Vision struct {
@@ -118,6 +125,9 @@ func (v *Vision) Look(ctx context.Context, img []byte) (string, error) {
 		}
 		if res.StatusCode == http.StatusTooManyRequests {
 			res.Body.Close()
+			if attempt == 2 {
+				return "", errors.New("nemotron rate limited")
+			}
 			continue
 		}
 		if res.StatusCode != http.StatusOK {

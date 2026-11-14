@@ -27,8 +27,7 @@ var tools = []Tool{{
 	}},
 }
 
-// facts gives the model the numbers it needs, worked out here so it never
-// has to calculate anything itself
+// facts does the math so the model never has to
 func facts(r check.Result) map[string]any {
 	f := map[string]any{
 		"product":  r.Name,
