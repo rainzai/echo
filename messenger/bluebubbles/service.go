@@ -165,7 +165,7 @@ func (s *Service) talk(ctx context.Context, chat string, msgs []Message) bool {
 			case err != nil:
 				log.Printf("check failed query=%q: %v", req.Query, err)
 			default:
-				log.Printf("checked query=%q country=%s price=%.2f", req.Query, req.Country, res.Price)
+				log.Printf("checked query=%q country=%s name=%q price=%.2f url=%s", req.Query, req.Country, res.Name, res.Price, res.URL)
 				checked = &res
 				s.mu.Lock()
 				s.sources[chat] = res.Sources

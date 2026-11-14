@@ -33,6 +33,7 @@ func facts(r check.Result) map[string]any {
 	f := map[string]any{
 		"product":  r.Name,
 		"shop":     shop(r.URL),
+		"page":     r.URL,
 		"currency": r.Currency,
 		"price":    r.Price,
 	}
@@ -56,7 +57,7 @@ func facts(r check.Result) map[string]any {
 
 	var cheaper []map[string]any
 	for _, o := range r.Elsewhere {
-		cheaper = append(cheaper, map[string]any{"shop": o.Shop, "price": o.Price})
+		cheaper = append(cheaper, map[string]any{"shop": o.Shop, "price": o.Price, "page": o.URL})
 	}
 	if len(cheaper) > 0 {
 		f["cheaper_elsewhere"] = cheaper
