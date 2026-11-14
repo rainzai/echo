@@ -18,6 +18,7 @@ type Request struct {
 	URL       string `json:"url,omitempty"`
 	Shop      string `json:"shop,omitempty"`
 	Condition string `json:"condition,omitempty"`
+	BuyWord   string `json:"buy_word,omitempty"`
 }
 
 type Result struct {

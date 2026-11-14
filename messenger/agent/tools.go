@@ -30,6 +30,10 @@ var tools = []Tool{{
 				"type":        "string",
 				"description": "The website of the shop the user named or the photo shows, e.g. coolblue.nl or bol.com.",
 			},
+			"buy_word": map[string]any{
+				"type":        "string",
+				"description": "The word for buy in the main language of the country being checked, e.g. kopen, kaufen, kupić, koupit.",
+			},
 			"condition": map[string]any{
 				"type":        "string",
 				"enum":        []string{"new", "refurbished", "used"},

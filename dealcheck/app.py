@@ -34,6 +34,8 @@ class CheckRequest(BaseModel):
     # where the user saw it, other shops are still compared
     shop: str | None = None
     condition: Literal["new", "refurbished", "used"] = "new"
+    # "buy" in the country's language, so exa finds local shops
+    buy_word: str | None = None
 
 # bol, www.bol.com and https://bol.com/x all become bol.com
 def domain(name):
@@ -57,10 +59,10 @@ def check(req: CheckRequest):
     # "refurbished" in the search, or exa only finds new ones
     if condition != "new":
         query = f"{query} {condition}"
-    local_job = pool.submit(exa_client.search, query, country)
+    local_job = pool.submit(exa_client.search, query, country, None, req.buy_word)
     world_job = pool.submit(exa_client.search, query) if country else None
     if not today and req.shop:
-        seen = [o for o in exa_client.search(query, country, domain(req.shop)) if fits(o)]
+        seen = [o for o in exa_client.search(query, country, domain(req.shop), req.buy_word) if fits(o)]
         today = next(filter(None, pool.map(exa_client.page, [o["url"] for o in seen[:2]])), None)
     local = local_job.result()
     world = [o for o in world_job.result() if o["url"] not in {l["url"] for l in local}][:WORLDWIDE] if world_job else []

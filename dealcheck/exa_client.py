@@ -171,13 +171,13 @@ def to_offer(page, listed=None):
             "condition": condition_of(page, info),
             "bundle": bool(info.get("bundle"))}
 
-# local word for buy, gets local shops
+# local word for buy, gets local shops. the messenger sends its own, this is the fallback
 BUY = {"NL": "kopen", "BE": "kopen", "FI": "osta", "DE": "kaufen", "GB": "buy"}
 
 # only shop pages, no reviews or comparison sites
-def search(query, country=None, domain=None):
+def search(query, country=None, domain=None, buy_word=None):
     if country:
-        query = f"{query} {BUY.get(country, 'buy')}"
+        query = f"{query} {buy_word or BUY.get(country, 'buy')}"
     options = {"include_domains": [domain]} if domain else {}
     result = exa.search(query, num_results=10, type="auto", user_location=country, contents=CONTENTS, **options)
     return [offer for offer in map(to_offer, result.results) if offer and offer["shop_page"]]

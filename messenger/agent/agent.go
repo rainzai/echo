@@ -125,6 +125,7 @@ func (a *Agent) run(ctx context.Context, t Turn, c *Call) map[string]any {
 	req.URL, _ = c.Args["url"].(string)
 	req.Shop, _ = c.Args["shop"].(string)
 	req.Condition, _ = c.Args["condition"].(string)
+	req.BuyWord, _ = c.Args["buy_word"].(string)
 
 	res, err := t.Check(ctx, req)
 	switch {
