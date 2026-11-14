@@ -21,13 +21,18 @@ type Message struct {
 }
 
 type Service struct {
-	client *Client
-	mu     sync.Mutex
-	seen   map[string]struct{}
+	client  *Client
+	mu      sync.Mutex
+	seen    map[string]struct{}
+	inboxes map[string][]Message
 }
 
 func NewService(client *Client) *Service {
-	return &Service{client: client, seen: make(map[string]struct{})}
+	return &Service{
+		client:  client,
+		seen:    make(map[string]struct{}),
+		inboxes: make(map[string][]Message),
+	}
 }
 
 func (s *Service) HandleMessage(m Message, via string) {
@@ -44,7 +49,14 @@ func (s *Service) HandleMessage(m Message, via string) {
 		return
 	}
 
-	go s.process(m, via)
+	// attachments and app bubbles show up as U+FFFC in the text
+	m.Text = strings.TrimSpace(strings.ReplaceAll(m.Text, "￼", ""))
+	if m.Text == "" {
+		return
+	}
+
+	log.Printf("message guid=%s via=%s chat=%s text=%q", m.GUID, via, m.Chats[0].GUID, m.Text)
+	s.enqueue(m)
 }
 
 // Poll catches messages the webhook misses. BlueBubbles watches chat.db for
@@ -79,22 +91,17 @@ func (s *Service) Poll(ctx context.Context) {
 	}
 }
 
-func (s *Service) process(m Message, via string) {
+func (s *Service) reply(chat string, msgs []Message) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	chat := m.Chats[0].GUID
-	log.Printf("message guid=%s via=%s chat=%s text=%q", m.GUID, via, chat, m.Text)
-
-	if m.Text == "" {
-		return
+	for _, m := range msgs {
+		if err := s.client.SendText(ctx, chat, m.Text); err != nil {
+			log.Printf("reply failed guid=%s: %v", m.GUID, err)
+			return
+		}
+		log.Printf("replied guid=%s", m.GUID)
 	}
-
-	if err := s.client.SendText(ctx, chat, m.Text); err != nil {
-		log.Printf("reply failed guid=%s: %v", m.GUID, err)
-		return
-	}
-	log.Printf("replied guid=%s", m.GUID)
 }
 
 func (s *Service) markSeen(guid string) bool {
