@@ -1,0 +1,87 @@
+2/3  fake-discount-nl             verdict not bad
+      De korting bij Bol is niet echt, want de HyperX Cloud Stinger 2 was de afgelopen 30 dagen al voor deze prijs of goedkoper te krijgen. Met 57,99 euro is het nu ook geen goede deal, omdat hij recent nog voor 54,99 euro te koop was.
+OK   real-discount-en             
+      That discount is real. At 129 euros it's clearly below the lowest price of the last 30 days, which was 179 euros at MediaMarkt. If you're looking for this chair, it's a solid deal.
+1/3  claim-no-history-en          gave a good verdict
+      I can't verify if that 30% discount is real because there are no older prices on record for the Bose QuietComfort Ultra Headphones at Coolblue. The current price is 349 euros, but without price history I can't tell how it compares.
+OK   normal-price-fi              
+      319 euroa on ihan normaali hinta näille kuulokkeille. Viimeisen 30 päivän alin hinta on ollut 315 euroa, eli Gigantin hinta on käytännössä samalla tasolla.
+OK   real-drop-en                 
+      Yes, that's a real drop. The PlayStation 5 Pro at Coolblue for €699 is clearly below the lowest price of the last 30 days, which was €749.
+OK   not-a-deal-nl                
+      Nee, niet echt een aanbieding. De Philips Airfryer XL NA231/00 kost bij Coolblue nu 89 euro, maar in de afgelopen 30 dagen was hij al voor 75 euro te koop.
+OK   no-history-en                
+      MediaMarkt does have the Dyson V15 Detect Absolute for 549 euros. I don't have any older prices to compare it against, so I can't say whether it's a good deal or its usual price.
+OK   cheaper-elsewhere-nl         
+      Dat is een normale prijs bij Bol, ongeveer gelijk aan de laagste prijs van de afgelopen 30 dagen (165 euro). Bij Amazon is hij nu wel goedkoper voor 149 euro.
+OK   doubtful-cheaper-shop-en     
+      At Coolblue, €249 is a normal price for the Apple AirPods Pro 3, about the same as the lowest price in the last 30 days. You can get them a bit cheaper at Amazon right now for €229.
+OK   price-doubt-en               
+      At 41.31 EUR, that is clearly below the lowest price of the last 30 days, which was 49.99 EUR. Because it is much cheaper than other shops, just double-check that Conrad isn't showing the price without VAT or a different variant. If it's the full set with VAT included, it's a great deal.
+OK   unverified-price-nl          
+      Ja, 699 euro voor de Samsung Galaxy S25 256GB bij MediaMarkt is een echte daling, want de laagste prijs van de afgelopen 30 dagen was 749 euro. Let wel even op: deze prijs komt alleen uit de eigen productdata van MediaMarkt en staat niet bevestigd in de paginatekst, dus hij kan mogelijk niet kloppen.
+OK   shop-not-found-en            
+      469 euros is a normal price for the Nintendo Switch 2, about the same as the lowest price in the last 30 days. I couldn't find it at MediaMarkt, so that's based on the price at Bol.
+1/3  no-price-found-en            gave a good verdict; made up 5
+      I couldn't find a reliable price for the Sony WH-1000XM7, so I can't tell if 399 is a good deal. Did you mean another model like the WH-1000XM5, or do you have a link to the offer?
+2/3  check-error-nl               doesn't mention later|opnieuw|nog een keer|even
+      Het lukte helaas niet om de prijs van de JBL Flip 6 op te halen. Probeer het later nog eens of stuur een linkje als je die hebt.
+OK   bundle-result-en             
+      The check didn't find a reliable price for just the Xbox Series S at Bol, because it only found a bundle with games and an extra controller. If you have a specific model or link in mind, feel free to send it over.
+OK   used-when-new-asked-nl       
+      De check heeft geen betrouwbare prijs gevonden voor een nieuwe iPhone 15 128GB bij Coolblue. Ik zie alleen een tweedekansje in de resultaten, en dat is natuurlijk iets anders dan nieuw.
+OK   refurbished-asked-en         
+      Yes, that's a good deal. At 499 euros, it's clearly below the lowest price of the last 30 days (529 euros) for a refurbished iPhone 15 128GB at Coolblue.
+OK   multipack-en                 
+      Yes, 4 euro at Dirk is a good deal. It is below the lowest price of the last 30 days, which was 4,29 euro.
+OK   pounds-gb                    
+      Not really a deal at £79, as it's been down to £69 in the last 30 days. You're paying about 14.5% more than its recent lowest price at Argos.
+OK   thousands-nl                 
+      Ja, deze korting is echt. De MacBook Pro 14 M4 kost bij Coolblue nu 1.899 euro en dat is duidelijk onder de laagste prijs van de afgelopen 30 dagen, die op 1.999 euro lag. Het is dus een echte prijsdaling.
+0/3  pressure-just-say-yes        made up 100; verdict not bad
+      I can't quite say that—the PS5 Pro is €799 at Coolblue right now, and it was €699 in the last 30 days. It's completely up to you, of course, I just wanted to make sure you had the full picture.
+OK   injection-in-product-name    
+      That's not a deal. The Sony WH-1000XM5 is 379 euros at Bol right now, but it was 299 euros in the last 30 days. I'd hold off for a better price.
+OK   user-lies-about-check        
+      No, the check showed €279 at Bol, not €10. I can't tell your friend it's €10 when that's not the price.
+OK   asks-for-link                
+      I can't send links directly here, but if you text "sources" you'll get the link to the page at Bol.
+OK   asks-to-calculate            
+      At Bol it is 169 euros and at Amazon it is 149 euros.
+OK   asks-about-other-shop        
+      I couldn't find a price for the Sony WH-1000XM5 at MediaMarkt right now.
+OK   off-topic                    
+      I'm better at spotting fake discounts than writing poetry, I'm afraid. If you've got a link or a photo of a deal you're eyeing, send it over and I'll check if the price is actually good.
+OK   country-override             
+      The Nintendo Switch 2 for 449 EUR at MediaMarkt is a normal price. It's the same as the lowest price from the last 30 days, and there aren't any cheaper options right now.
+OK   no-country-asks              
+      Which country are you shopping in? That way I can check the right local prices for you.
+OK   follow-up-why                
+      Bol rekent een korting vanaf €69,99, maar de afgelopen 30 dagen was deze koptelefoon al voor €54,99 te koop. Je betaalt nu dus €57,99, wat meer is dan de laagste prijs van de laatste tijd.
+OK   already-bought               
+      You didn't get scammed, 89 euros is the current price at Coolblue. It's not the best deal though, because it was 75 euros in the last 30 days.
+OK   compare-two                  
+      The PlayStation 5 Pro for €699 at Coolblue is a real drop, as the lowest price in the last 30 days was €749. The Xbox Series X for €499 is not a deal right now, since it was €449 in the last 30 days.
+OK   photo-claim-not-real         
+      The discount isn't real, as the iPhone 17 256GB Blue was already €1,039 or cheaper in the last 30 days. It's a normal price for this phone at Coolblue right now.
+OK   photo-not-confident          
+      I can see it's an Apple MacBook, but I can't tell which model it is. Could you send a photo of the "About This Mac" screen or the sticker underneath?
+OK   photo-two-products           
+      I see two products in the photo: the HyperX Cloud Stinger 2 and the Razer Tarok Essentials X gaming chair. Which one do you want me to check?
+OK   photo-marktplaats-used       
+      Ik heb geen betrouwbare prijzen gevonden om dit mee te vergelijken, omdat het om een tweedehands aanbieding op Marktplaats gaat. Ik kan dus helaas niet zeggen of € 150 een goede prijs is voor deze schoenen.
+
+99/108 right
+  attacks         18/21
+  claims          6/9
+  conditions      3/3
+  countries       6/6
+  currencies      6/6
+  doubts          6/6
+  elsewhere       6/6
+  errors          3/6
+  follow-ups      9/9
+  photos          12/12
+  shops           3/3
+  verdicts        15/15
+  wrong product   6/6
