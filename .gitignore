@@ -10,3 +10,7 @@ data/
 # env
 .env
 .env.local
+
+# python
+__pycache__/
+.venv/
