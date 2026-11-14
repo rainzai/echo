@@ -1,0 +1,39 @@
+country,shop,product,url,expected_price,currency,checked_on,notes
+NL,coolblue.nl,Sony WH-1000XM6 Zilver,https://www.coolblue.nl/product/962725/sony-wh-1000xm6-zilver.html,319,EUR,2026-11-14,also shows adviesprijs and Tweedekans
+NL,coolblue.nl,Philips Airfryer XL NA231/00,https://www.coolblue.nl/product/947367/philips-airfryer-xl-na231-00.html,75,EUR,2026-11-14,
+NL,bol.com,Sony WH-1000XM6 Blauw,https://www.bol.com/nl/nl/p/sony-wh-1000xm6-draadloze-koptelefoon-met-noise-cancelling-blauw/9300000229857582/,322,EUR,2026-11-14,several sellers
+NL,bol.com,Philips 2000 Series NA231/00 airfryer,https://www.bol.com/nl/nl/p/philips-2000-series-na231-00-friteuse-enkel-vrijstaand-1700-w-heteluchtfriteuse-zwart-zilver/9300000177049093/,79,EUR,2026-11-14,several sellers
+NL,mediamarkt.nl,Sony WH-1000XM6 Zwart,https://www.mediamarkt.nl/nl/product/_sony-wh-1000xm6-draadloze-koptelefoon-met-noise-cancelling-zwart-1885109.html,319,EUR,2026-11-14,
+NL,mediamarkt.nl,ZEDAR AF600 XXL Airfryer,https://www.mediamarkt.nl/nl/product/_zedar-af600-air-fryer-zwart-137676017.html,49,EUR,2026-11-14,
+NL,wehkamp.nl,Philips 3000 Series airfryer 6.2 L,https://www.wehkamp.nl/philips-3000-series-airfryer-rapidair-plus-6-2-liter-na331-00-17592598/,143.99,EUR,2026-11-14,
+NL,wehkamp.nl,Inventum airfryer GF800HLD,https://www.wehkamp.nl/inventum-airfryer-gf800hld-2-x-4-liter-zwart-rvs-17392575/,94.83,EUR,2026-11-14,
+NL,amazon.nl,JBL Live 670 NC,https://www.amazon.nl/dp/B0CJFT5BZ3,79.99,EUR,2026-11-14,several sellers
+NL,bcc.nl,Samsung Galaxy Buds3 Zilver,https://www.bcc.nl/product/samsung-galaxy-buds3-oordopjes-zilver,119.90,EUR,2026-11-14,
+NL,kruidvat.nl,Oral-B iO Series 3s,https://www.kruidvat.nl/oral-b-io-series-3s-elektrische-tandenborstel/p/5838439,65.99,EUR,2026-11-14,
+UK,currys.co.uk,Sony WH-1000XM6 Black,https://www.currys.co.uk/products/sony-wh1000xm6-wireless-bluetooth-noisecancelling-headphones-black-10282441.html,298.00,GBP,2026-11-14,
+UK,currys.co.uk,Philips 2000 Series NA230/09 air fryer,https://www.currys.co.uk/products/philips-2000-series-na23009-air-fryer-black-10268603.html,149.99,GBP,2026-11-14,
+UK,argos.co.uk,Philips 3000 Series NA351 9L dual basket air fryer,https://www.argos.co.uk/product/7935886,179.99,GBP,2026-11-14,
+UK,very.co.uk,Sony WH-1000XM6,https://www.very.co.uk/sony-wh-1000xm6-noise-cancelling-over-ear-headphones/1601307825.prd,,GBP,,replaces amazon.co.uk (showed EUR from NL)
+UK,johnlewis.com,Sony WH-1000XM6,https://www.johnlewis.com/sony-wh-1000xm6-noise-cancelling-wireless-bluetooth-high-resolution-audio-over-ear-headphones-with-mic-remote/p113671309,298,GBP,2026-11-14,one page for all colours
+UK,ao.com,Philips 2000 Series NA230/09 air fryer,https://ao.com/product/na23009-philips-2000-series-air-fryer-black-106634-672.aspx,59,GBP,2026-11-14,also shows AO Member price
+UK,boots.com,Oral-B iO2 Simple White + travel case,https://www.boots.com/oral-b-io2-electric-toothbrush-simple-white-with-travel-case-10356964,35,GBP,2026-11-14,
+FI,verkkokauppa.com,Sony WH-1000XM6 musta,https://www.verkkokauppa.com/fi/product/986497/Sony-WH-1000XM6-vastamelukuulokkeet-musta,339.00,EUR,2026-11-14,
+FI,verkkokauppa.com,Philips 2000 Series NA231/00 airfryer,https://www.verkkokauppa.com/fi/product/921892/Philips-2000-Series-NA231-00-airfryer,79.99,EUR,2026-11-14,
+FI,gigantti.fi,Sony WH-1000XM6 musta,https://www.gigantti.fi/product/tv-aani-ja-alykoti/kuulokkeet-ja-tarvikkeet/kuulokkeet/sony-wh-1000xm6-langattomat-around-ear-kuulokkeet-musta/921132,339,EUR,2026-11-14,
+FI,gigantti.fi,Philips Airfryer 2000 Series 6.2L NA231/00,https://www.gigantti.fi/product/kodin-pienkoneet/keittion-pienkoneet/airfryer-laitteet/philips-airfryer-2000-series-62l-na23100/774647,79.99,EUR,2026-11-14,also shows outlet price
+FI,power.fi,Philips 2000 Series NA231/00 airfryer,https://www.power.fi/keittion-pienkoneet/paistaminen-ja-kypsentaminen/airfryer-ja-friteeraus/airfryerit/philips-2000-series-na23100-airfryer/p-3111515/,79.99,EUR,2026-11-14,
+FI,jimms.fi,Samsung 990 PRO 2TB SSD,https://www.jimms.fi/fi/Product/Show/186306,529.00,EUR,2026-11-14,
+FI,tokmanni.fi,Electrolux EAF5CG airfryer,https://www.tokmanni.fi/airfryer-kypsennyslaite-electrolux-eaf5cg-musta-ha-7333394032665,107.00,EUR,2026-11-14,
+FI,clasohlson.com/fi,Cocraft LXC Akkuporakone 18 V DD18-BL,https://www.clasohlson.com/fi/Cocraft-LXC-Akkuporakone-18-V-DD18-BL/p/41-4093,,EUR,,replaces sold-out Bosch EasyDrill
+NL,coolblue.nl,Apple AirPods Pro 3,https://www.coolblue.nl/product/969421/apple-airpods-pro-3.html,,EUR,,also shows Tweedekans
+NL,wehkamp.nl,Philips 2000 Series airfryer 3.2 L,https://www.wehkamp.nl/philips-2000-series-airfryer-3-2-liter-na210-00-17592566/,,EUR,,
+NL,wehkamp.nl,Tefal Crisp&Go FB701A,https://www.wehkamp.nl/tefal-crisp-go-fb701a-air-fryer-met-glazen-schalen-4-kookstanden-1-4-l-3-8-l-17623466/,,EUR,,
+NL,amazon.nl,Kindle Paperwhite 16GB 2024,https://www.amazon.nl/kindle-paperwhite-2024/dp/B0CFPWLGF2,,EUR,,
+NL,amazon.nl,UGREEN HiTune Max5c,https://www.amazon.nl/dp/B0CWV5LG6M,,EUR,,
+NL,bcc.nl,Samsung Jet 60 Turbo steelstofzuiger,https://www.bcc.nl/product/samsung-vs15a6031r1-jet-60-turbo-steelstofzuiger,,EUR,,
+UK,currys.co.uk,Apple AirPods Pro 3 White,https://www.currys.co.uk/products/apple-airpods-pro-3-white-10291174.html,,GBP,,
+UK,argos.co.uk,Nintendo Switch 2 Console Black,https://www.argos.co.uk/product/7624867,,GBP,,
+FI,verkkokauppa.com,PlayStation 5 Slim NBA 2K26,https://www.verkkokauppa.com/fi/product/1006594/PlayStation-5-Slim-PS5-NBA-2K26-pelikonsoli,,EUR,,
+FI,gigantti.fi,Apple AirPods Pro Gen 3,https://www.gigantti.fi/product/tv-aani-ja-alykoti/kuulokkeet-ja-tarvikkeet/kuulokkeet/apple-airpods-pro-gen-3-2025-taysin-langattomat-kuulokkeet/982641,,EUR,,
+FI,jimms.fi,AMD Ryzen 7 9800X3D,https://www.jimms.fi/fi/Product/Show/207359,,EUR,,
+FI,tokmanni.fi,Kahvinkeitin 0.6 l,https://www.tokmanni.fi/kahvinkeitin-0-6-l-6419860395357,,EUR,,
