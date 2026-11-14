@@ -36,6 +36,8 @@ class CheckRequest(BaseModel):
     condition: Literal["new", "refurbished", "used"] = "new"
     # "buy" in the country's language, so exa finds local shops
     buy_word: str | None = None
+    # local currency, so a kz search doesn't settle for russian shops
+    currency: str | None = None
 
 # bol, www.bol.com and https://bol.com/x all become bol.com
 def domain(name):
@@ -47,7 +49,8 @@ def check(req: CheckRequest):
     link = req.url or ((m := LINK.search(req.query)) and m.group())
     today = None
     query = req.query
-    fits = lambda o: o["condition"] == req.condition and not o["bundle"] and exa_client.matches_query(req.query, o)
+    fits = lambda o: (o["condition"] == req.condition and not o["bundle"] and exa_client.matches_query(req.query, o)
+                      and (not req.currency or o["currency"] == req.currency.upper()))
     condition = req.condition
     if link:
         today = exa_client.page(clean_link(link))
@@ -59,10 +62,10 @@ def check(req: CheckRequest):
     # "refurbished" in the search, or exa only finds new ones
     if condition != "new":
         query = f"{query} {condition}"
-    local_job = pool.submit(exa_client.search, query, country, None, req.buy_word)
+    local_job = pool.submit(exa_client.search, query, country, None, req.buy_word, req.currency)
     world_job = pool.submit(exa_client.search, query) if country else None
     if not today and req.shop:
-        seen = [o for o in exa_client.search(query, country, domain(req.shop), req.buy_word) if fits(o)]
+        seen = [o for o in exa_client.search(query, country, domain(req.shop), req.buy_word, req.currency) if fits(o)]
         today = next(filter(None, pool.map(exa_client.page, [o["url"] for o in seen[:2]])), None)
     local = local_job.result()
     world = [o for o in world_job.result() if o["url"] not in {l["url"] for l in local}][:WORLDWIDE] if world_job else []

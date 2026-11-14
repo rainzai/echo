@@ -8,6 +8,9 @@ import (
 	"strings"
 	"sync"
 
+	"golang.org/x/text/currency"
+	"golang.org/x/text/language"
+
 	"messenger/check"
 )
 
@@ -126,6 +129,11 @@ func (a *Agent) run(ctx context.Context, t Turn, c *Call) map[string]any {
 	req.Shop, _ = c.Args["shop"].(string)
 	req.Condition, _ = c.Args["condition"].(string)
 	req.BuyWord, _ = c.Args["buy_word"].(string)
+	if region, err := language.ParseRegion(req.Country); err == nil {
+		if cur, ok := currency.FromRegion(region); ok {
+			req.Currency = cur.String()
+		}
+	}
 
 	res, err := t.Check(ctx, req)
 	switch {

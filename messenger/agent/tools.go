@@ -32,7 +32,7 @@ var tools = []Tool{{
 			},
 			"buy_word": map[string]any{
 				"type":        "string",
-				"description": "The word for buy in the main language of the country being checked, e.g. kopen, kaufen, kupić, koupit.",
+				"description": "The word for buy in the country's own main language, never English unless the country speaks only English, even when the user writes English. E.g. kopen, kaufen, kupić, खरीदें, خریدیں, কিনুন.",
 			},
 			"condition": map[string]any{
 				"type":        "string",
@@ -40,7 +40,7 @@ var tools = []Tool{{
 				"description": "Only when the user or the photo says it's refurbished or used.",
 			},
 		},
-		"required": []string{"query"},
+		"required": []string{"query", "buy_word"},
 	}},
 }
 

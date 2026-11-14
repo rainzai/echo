@@ -21,7 +21,8 @@ SCHEMA = {
                   "(Tweedekans), not other variants, bundles, accessories or recommended products. "
                   "A comma can be the decimal sign, and ',-' means no cents. "
                   "0 if the page text doesn't show this product's price."},
-        "currency": {"type": "string", "description": "ISO currency code, e.g. EUR"},
+        "currency": {"type": "string", "description": "ISO currency code, e.g. EUR. For a symbol several currencies "
+                     "use, like $ or kr, go by the shop's country: $ on a Canadian shop is CAD, on an Australian one AUD."},
         "was_price": {"type": "number", "description": "The higher old price the page shows with the current price "
                       "to claim a discount on this product: crossed-out, 'was', list or advice price. "
                       "0 if the page shows none."},
@@ -171,13 +172,11 @@ def to_offer(page, listed=None):
             "condition": condition_of(page, info),
             "bundle": bool(info.get("bundle"))}
 
-# local word for buy, gets local shops. the messenger sends its own, this is the fallback
-BUY = {"NL": "kopen", "BE": "kopen", "FI": "osta", "DE": "kaufen", "GB": "buy"}
-
 # only shop pages, no reviews or comparison sites
-def search(query, country=None, domain=None, buy_word=None):
+def search(query, country=None, domain=None, buy_word=None, currency=None):
     if country:
-        query = f"{query} {buy_word or BUY.get(country, 'buy')}"
+        # the currency code keeps english searches out of us shops, "buy AUD" finds australian ones
+        query = f"{query} {buy_word or 'buy'} {currency or ''}".strip()
     options = {"include_domains": [domain]} if domain else {}
     result = exa.search(query, num_results=10, type="auto", user_location=country, contents=CONTENTS, **options)
     return [offer for offer in map(to_offer, result.results) if offer and offer["shop_page"]]
