@@ -135,9 +135,6 @@ func (s *Service) reply(chat string, msgs []Message) {
 		if err := s.client.React(ctx, chat, m.GUID, "like"); err != nil {
 			log.Printf("react failed guid=%s: %v", m.GUID, err)
 		}
-		if err := s.client.Typing(ctx, chat, true); err != nil {
-			log.Printf("typing failed chat=%s: %v", chat, err)
-		}
 		go s.check(chat, check.Request{Query: m.Text, Country: country(m.Handle.Address)})
 	}
 }
@@ -146,8 +143,10 @@ func (s *Service) check(chat string, req check.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 
+	stop := s.keepTyping(ctx, chat)
 	text := "Sorry, I couldn't check that right now. Try again in a bit."
 	res, err := s.checker.Check(ctx, req)
+	stop()
 	switch {
 	case errors.Is(err, check.ErrNoPrice):
 		text = "I couldn't find a price for that. Try sending the product name or another shop's link."
@@ -167,6 +166,28 @@ func (s *Service) check(chat string, req check.Request) {
 	if err := s.client.SendText(ctx, chat, text); err != nil {
 		log.Printf("verdict reply failed chat=%s: %v", chat, err)
 	}
+}
+
+// keepTyping waits for the tapback to land (it clears the bubble), then toggles
+// typing off and on so iMessage gets a fresh signal each round
+func (s *Service) keepTyping(ctx context.Context, chat string) func() {
+	ctx, cancel := context.WithCancel(ctx)
+	go func() {
+		wait := 1500 * time.Millisecond
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(wait):
+			}
+			_ = s.client.Typing(ctx, chat, false)
+			if err := s.client.Typing(ctx, chat, true); err != nil && ctx.Err() == nil {
+				log.Printf("typing failed chat=%s: %v", chat, err)
+			}
+			wait = 4 * time.Second
+		}
+	}()
+	return cancel
 }
 
 // country guesses from the phone prefix, only used when nothing better is known
