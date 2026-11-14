@@ -13,22 +13,31 @@ import (
 var ErrNoPrice = errors.New("no price found")
 
 type Request struct {
-	Query   string `json:"query"`
-	Country string `json:"country,omitempty"`
+	Query     string `json:"query"`
+	Country   string `json:"country,omitempty"`
+	URL       string `json:"url,omitempty"`
+	Shop      string `json:"shop,omitempty"`
+	Condition string `json:"condition,omitempty"`
 }
 
 type Result struct {
-	Query     string       `json:"query"`
-	Country   string       `json:"country"`
-	URL       string       `json:"url"`
-	Name      string       `json:"name"`
-	Currency  string       `json:"currency"`
-	Price     float64      `json:"price"`
-	Low30d    *float64     `json:"low_30d"`
-	FakeSale  bool         `json:"fake_sale"`
-	History   []PricePoint `json:"history"`
-	Elsewhere []Offer      `json:"elsewhere"`
-	Sources   []Source     `json:"sources"`
+	Query           string       `json:"query"`
+	Country         string       `json:"country"`
+	URL             string       `json:"url"`
+	Name            string       `json:"name"`
+	Currency        string       `json:"currency"`
+	Price           float64      `json:"price"`
+	Low30d          *float64     `json:"low_30d"`
+	PriceDoubt      string       `json:"price_doubt"`
+	Condition       string       `json:"condition"`
+	Bundle          bool         `json:"bundle"`
+	ShopFound       bool         `json:"shop_found"`
+	ClaimedPrice    *float64     `json:"claimed_price"`
+	ClaimedDiscount *float64     `json:"claimed_discount"`
+	FakeSale        bool         `json:"fake_sale"`
+	History         []PricePoint `json:"history"`
+	Elsewhere       []Offer      `json:"elsewhere"`
+	Sources         []Source     `json:"sources"`
 }
 
 type PricePoint struct {
@@ -42,6 +51,7 @@ type Offer struct {
 	Shop  string  `json:"shop"`
 	Price float64 `json:"price"`
 	Date  string  `json:"date"`
+	Doubt string  `json:"doubt"`
 }
 
 type Source struct {

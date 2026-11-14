@@ -122,6 +122,9 @@ func (a *Agent) run(ctx context.Context, t Turn, c *Call) map[string]any {
 	if country, _ := c.Args["country"].(string); country != "" {
 		req.Country = country
 	}
+	req.URL, _ = c.Args["url"].(string)
+	req.Shop, _ = c.Args["shop"].(string)
+	req.Condition, _ = c.Args["condition"].(string)
 
 	res, err := t.Check(ctx, req)
 	switch {
@@ -130,7 +133,7 @@ func (a *Agent) run(ctx context.Context, t Turn, c *Call) map[string]any {
 	case err != nil:
 		return map[string]any{"error": "the price check failed"}
 	}
-	return facts(res)
+	return facts(req, res)
 }
 
 // trim never cuts a tool call off from its result
