@@ -1,5 +1,7 @@
 package bluebubbles
 
+import "time"
+
 // a chat's key in inboxes exists while its worker is running
 func (s *Service) enqueue(m Message) {
 	chat := m.Chats[0].GUID
@@ -14,7 +16,11 @@ func (s *Service) enqueue(m Message) {
 	}
 }
 
+// a link sent from a mac arrives as two messages, waiting a moment answers them together
+const gather = 1500 * time.Millisecond
+
 func (s *Service) work(chat string) {
+	time.Sleep(gather)
 	for {
 		s.mu.Lock()
 		msgs := s.inboxes[chat]

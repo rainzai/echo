@@ -191,7 +191,7 @@ func runCase(ctx context.Context, model, judge Model, c verdictCase, id int) (st
 		return r.Result, nil
 	}
 
-	a := New(model, nil)
+	a := New(model, NewGemini(os.Getenv("GEMINI_API_KEY"), "gemini-3.8-flash", "low"), nil)
 	chat := fmt.Sprintf("%s-%d", c.Name, id)
 	var reply string
 	for _, m := range c.Messages {
@@ -265,7 +265,7 @@ func TestVerdict(t *testing.T) {
 
 	model := NewGemini(os.Getenv("GEMINI_API_KEY"), envOr("GEMINI_MODEL", "gemini-4-hydrogen"), envOr("GEMINI_THINKING", "low"))
 	// a different model judges, so hydrogen doesn't grade itself
-	judge := NewGemini(os.Getenv("GEMINI_API_KEY"), "gemini-3.8-flash", "low")
+	judge := NewGemini(os.Getenv("GEMINI_API_KEY"), envOr("JUDGE_MODEL", "gemini-3.8-flash"), "low")
 	type outcome struct {
 		reply    string
 		problems []string

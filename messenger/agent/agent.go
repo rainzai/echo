@@ -65,14 +65,16 @@ type Turn struct {
 }
 
 type Agent struct {
-	model   Model
-	vision  *Vision
-	mu      sync.Mutex
-	history map[string][]Message
+	model Model
+	// fallback takes over a step when model answers empty, hydrogen does that in longer chats
+	fallback Model
+	vision   *Vision
+	mu       sync.Mutex
+	history  map[string][]Message
 }
 
-func New(model Model, vision *Vision) *Agent {
-	return &Agent{model: model, vision: vision, history: make(map[string][]Message)}
+func New(model, fallback Model, vision *Vision) *Agent {
+	return &Agent{model: model, fallback: fallback, vision: vision, history: make(map[string][]Message)}
 }
 
 func (a *Agent) Reply(ctx context.Context, t Turn) (string, error) {
@@ -98,6 +100,10 @@ func (a *Agent) Reply(ctx context.Context, t Turn) (string, error) {
 
 	for range maxCalls + 1 {
 		m, err := a.model.Generate(ctx, system, tools, history)
+		if errors.Is(err, errEmpty) && a.fallback != nil {
+			log.Printf("fallback chat=%s: %v", t.Chat, err)
+			m, err = a.fallback.Generate(ctx, system, tools, history)
+		}
 		if err != nil {
 			return "", err
 		}

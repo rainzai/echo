@@ -72,9 +72,13 @@ type request struct {
 
 type response struct {
 	Candidates []struct {
-		Content content `json:"content"`
+		Content      content `json:"content"`
+		FinishReason string  `json:"finishReason"`
 	} `json:"candidates"`
 }
+
+// errEmpty is gemini answering with nothing, which happens now and then and works on a retry
+var errEmpty = errors.New("gemini returned no text")
 
 func (g *Gemini) Generate(ctx context.Context, system string, tools []Tool, history []Message) (Message, error) {
 	body := request{
@@ -136,7 +140,7 @@ func (g *Gemini) Generate(ctx context.Context, system string, tools []Tool, hist
 	}
 	m.Text = strings.Join(texts, " ")
 	if m.Call == nil && m.Text == "" {
-		return Message{}, errors.New("gemini returned no text")
+		return Message{}, fmt.Errorf("%w (%s)", errEmpty, out.Candidates[0].FinishReason)
 	}
 	return m, nil
 }
