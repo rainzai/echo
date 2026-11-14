@@ -1,39 +1,94 @@
 package check
 
-type Request struct {
-	Message      string  `json:"message"`
-	URL          string  `json:"url,omitempty"`
-	Product      string  `json:"product,omitempty"`
-	Country      string  `json:"country,omitempty"`
-	ClaimedPrice float64 `json:"claimed_price,omitempty"`
-}
-
-type Verdict string
-
-const (
-	FakeSale Verdict = "fake_sale"
-	GoodDeal Verdict = "good_deal"
-	Wait     Verdict = "wait"
-	Unknown  Verdict = "unknown"
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
 )
 
+var ErrNoPrice = errors.New("no price found")
+
+type Request struct {
+	Query   string `json:"query"`
+	Country string `json:"country,omitempty"`
+}
+
 type Result struct {
-	Verdict          Verdict      `json:"verdict"`
-	Summary          string       `json:"summary"`
-	PriceNow         float64      `json:"price_now"`
-	Currency         string       `json:"currency"`
-	PriceHistory     []PricePoint `json:"price_history"`
-	CheaperElsewhere []Offer      `json:"cheaper_elsewhere"`
+	Query     string       `json:"query"`
+	Country   string       `json:"country"`
+	URL       string       `json:"url"`
+	Name      string       `json:"name"`
+	Currency  string       `json:"currency"`
+	Price     float64      `json:"price"`
+	Low30d    *float64     `json:"low_30d"`
+	FakeSale  bool         `json:"fake_sale"`
+	History   []PricePoint `json:"history"`
+	Elsewhere []Offer      `json:"elsewhere"`
+	Sources   []Source     `json:"sources"`
 }
 
 type PricePoint struct {
-	Date   string  `json:"date"`
-	Price  float64 `json:"price"`
-	Source string  `json:"source"`
+	Date  string  `json:"date"`
+	Price float64 `json:"price"`
+	URL   string  `json:"url"`
 }
 
 type Offer struct {
+	URL   string  `json:"url"`
 	Shop  string  `json:"shop"`
 	Price float64 `json:"price"`
-	URL   string  `json:"url"`
+	Date  string  `json:"date"`
+}
+
+type Source struct {
+	N     int    `json:"n"`
+	URL   string `json:"url"`
+	Date  string `json:"date"`
+	Label string `json:"label"`
+}
+
+type Client struct {
+	baseURL string
+	http    *http.Client
+}
+
+func NewClient(baseURL string) *Client {
+	return &Client{baseURL: baseURL, http: &http.Client{}}
+}
+
+func (c *Client) Check(ctx context.Context, req Request) (Result, error) {
+	b, err := json.Marshal(req)
+	if err != nil {
+		return Result{}, err
+	}
+
+	r, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/check", bytes.NewReader(b))
+	if err != nil {
+		return Result{}, err
+	}
+	r.Header.Set("Content-Type", "application/json")
+
+	res, err := c.http.Do(r)
+	if err != nil {
+		return Result{}, fmt.Errorf("check: %w", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusUnprocessableEntity {
+		return Result{}, ErrNoPrice
+	}
+	if res.StatusCode != http.StatusOK {
+		msg, _ := io.ReadAll(io.LimitReader(res.Body, 512))
+		return Result{}, fmt.Errorf("check: %s: %s", res.Status, msg)
+	}
+
+	var out Result
+	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+		return Result{}, fmt.Errorf("check: %w", err)
+	}
+	return out, nil
 }

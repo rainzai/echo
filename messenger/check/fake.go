@@ -14,18 +14,27 @@ func (Fake) Check(ctx context.Context, req Request) (Result, error) {
 	case <-time.After(3 * time.Second):
 	}
 
+	low := 79.99
 	return Result{
-		Verdict:  FakeSale,
-		Summary:  "This '-40%' price was the normal price 30 days ago.",
-		PriceNow: 79.99,
+		Query:    req.Query,
+		Country:  "NL",
+		URL:      "https://shop.example/product/123",
+		Name:     "Sony WH-1000XM5",
 		Currency: "EUR",
-		PriceHistory: []PricePoint{
-			{Date: "2026-08-16", Price: 79.99, Source: "https://shop.example/product/123"},
-			{Date: "2026-09-15", Price: 89.99, Source: "https://shop.example/product/123"},
-			{Date: "2026-10-15", Price: 79.99, Source: "https://shop.example/product/123"},
+		Price:    79.99,
+		Low30d:   &low,
+		FakeSale: true,
+		History: []PricePoint{
+			{Date: "2026-09-15", Price: 89.99, URL: "https://shop.example/product/123"},
+			{Date: "2026-10-15", Price: 79.99, URL: "https://shop.example/product/123"},
+			{Date: "2026-11-14", Price: 79.99, URL: "https://shop.example/product/123"},
 		},
-		CheaperElsewhere: []Offer{
-			{Shop: "other.example", Price: 69.99, URL: "https://other.example/item/456"},
+		Elsewhere: []Offer{
+			{URL: "https://other.example/item/456", Shop: "other.example", Price: 69.99, Date: "2026-11-14"},
+		},
+		Sources: []Source{
+			{N: 1, URL: "https://shop.example/product/123", Date: "2026-10-15", Label: "shop.example on 2026-10-15"},
+			{N: 2, URL: "https://other.example/item/456", Date: "2026-11-14", Label: "other.example"},
 		},
 	}, nil
 }

@@ -29,13 +29,21 @@ func run(getenv func(string, string) string) error {
 		addr       = "127.0.0.1:" + getenv("PORT", "8080")
 		bbURL      = getenv("BLUEBUBBLES_URL", "http://127.0.0.1:1234")
 		bbPassword = getenv("BLUEBUBBLES_PASSWORD", "")
+		checkURL   = getenv("DEALCHECK_URL", "")
 	)
 
 	if bbPassword == "" {
 		return errors.New("BLUEBUBBLES_PASSWORD is not set")
 	}
 
-	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), check.Fake{})
+	var checker bluebubbles.Checker = check.Fake{}
+	if checkURL != "" {
+		checker = check.NewClient(checkURL)
+	} else {
+		log.Println("DEALCHECK_URL not set, using fake checks")
+	}
+
+	svc := bluebubbles.NewService(bluebubbles.NewClient(bbURL, bbPassword), checker)
 	bb := bluebubbles.NewHandler(svc)
 
 	mux := http.NewServeMux()

@@ -22,6 +22,7 @@
       default = pkgs.mkShellNoCC {
         packages = with pkgs; [
           go
+          uv
         ];
       };
     });

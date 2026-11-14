@@ -2,6 +2,7 @@ package bluebubbles
 
 import (
 	"context"
+	"errors"
 	"log"
 	"regexp"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"messenger/check"
+	"messenger/reply"
 )
 
 type Message struct {
@@ -33,6 +35,7 @@ type Service struct {
 	mu      sync.Mutex
 	seen    map[string]struct{}
 	inboxes map[string][]Message
+	sources map[string][]check.Source
 }
 
 func NewService(client *Client, checker Checker) *Service {
@@ -41,6 +44,7 @@ func NewService(client *Client, checker Checker) *Service {
 		checker: checker,
 		seen:    make(map[string]struct{}),
 		inboxes: make(map[string][]Message),
+		sources: make(map[string][]check.Source),
 	}
 }
 
@@ -107,6 +111,17 @@ func (s *Service) reply(chat string, msgs []Message) {
 	defer cancel()
 
 	for _, m := range msgs {
+		if strings.EqualFold(strings.TrimSpace(m.Text), "sources") {
+			s.mu.Lock()
+			text := reply.Sources(s.sources[chat])
+			s.mu.Unlock()
+			if err := s.client.SendText(ctx, chat, text); err != nil {
+				log.Printf("reply failed guid=%s: %v", m.GUID, err)
+				return
+			}
+			continue
+		}
+
 		url := urlPattern.FindString(m.Text)
 		if url == "" {
 			if err := s.client.SendText(ctx, chat, m.Text); err != nil {
@@ -117,13 +132,13 @@ func (s *Service) reply(chat string, msgs []Message) {
 			continue
 		}
 
-		if err := s.client.Typing(ctx, chat, true); err != nil {
-			log.Printf("typing failed chat=%s: %v", chat, err)
-		}
 		if err := s.client.React(ctx, chat, m.GUID, "like"); err != nil {
 			log.Printf("react failed guid=%s: %v", m.GUID, err)
 		}
-		go s.check(chat, check.Request{Message: m.Text, URL: url})
+		if err := s.client.Typing(ctx, chat, true); err != nil {
+			log.Printf("typing failed chat=%s: %v", chat, err)
+		}
+		go s.check(chat, check.Request{Query: m.Text, Country: country(m.Handle.Address)})
 	}
 }
 
@@ -133,19 +148,37 @@ func (s *Service) check(chat string, req check.Request) {
 
 	text := "Sorry, I couldn't check that right now. Try again in a bit."
 	res, err := s.checker.Check(ctx, req)
-	if err != nil {
-		log.Printf("check failed url=%s: %v", req.URL, err)
-	} else {
-		text = res.Summary
-		log.Printf("checked url=%s verdict=%s", req.URL, res.Verdict)
+	switch {
+	case errors.Is(err, check.ErrNoPrice):
+		text = "I couldn't find a price for that. Try sending the product name or another shop's link."
+	case err != nil:
+		log.Printf("check failed query=%q: %v", req.Query, err)
+	default:
+		text = reply.Verdict(res)
+		s.mu.Lock()
+		s.sources[chat] = res.Sources
+		s.mu.Unlock()
+		log.Printf("checked query=%q fake_sale=%t", req.Query, res.FakeSale)
 	}
 
 	if err := s.client.Typing(ctx, chat, false); err != nil {
 		log.Printf("typing failed chat=%s: %v", chat, err)
 	}
 	if err := s.client.SendText(ctx, chat, text); err != nil {
-		log.Printf("verdict reply failed url=%s: %v", req.URL, err)
+		log.Printf("verdict reply failed chat=%s: %v", chat, err)
 	}
+}
+
+// country guesses from the phone prefix, only used when nothing better is known
+func country(address string) string {
+	for prefix, code := range map[string]string{
+		"+31": "NL", "+32": "BE", "+33": "FR", "+44": "GB", "+49": "DE", "+358": "FI", "+1": "US",
+	} {
+		if strings.HasPrefix(address, prefix) {
+			return code
+		}
+	}
+	return ""
 }
 
 func (s *Service) markSeen(guid string) bool {
