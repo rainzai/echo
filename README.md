@@ -42,6 +42,15 @@ The steps run in order for every message.
     - Code works out the 30-day low, whether the discount is real and which shops are cheaper
     - Gemini puts that into a short reply in the user's language
 
+## Repo
+
+- `messenger/`: Go. iMessage via BlueBubbles, the Gemini agent, Nemotron, evals
+- `dealcheck/`: Python. Exa search, live contents and Snapshot price history
+
+## Privacy
+
+Echo keeps each chat in memory only, and forgets it on restart. Like any iMessage, the messages and photos also live in Messages on the Mac that runs Echo, and the log shows message text. To answer, message text goes to Gemini, photos to Nemotron and product names to Exa. Everything on the Mac is deleted after the event.
+
 ## Evals
 
 - `messenger/eval/verdict`: 36 conversations (fake and real discounts, doubtful prices, other currencies, photos, people trying to trick it), checked by code and judged by a second Gemini model. 179/180 on the final prompt.
