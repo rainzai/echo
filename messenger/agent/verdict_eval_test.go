@@ -244,8 +244,9 @@ func runCase(ctx context.Context, model, judge Model, c verdictCase, id int) (st
 		problems = append(problems, "made up "+strings.Join(bad, " "))
 	}
 	max := e.MaxSentences
+	// three plus the one-time line about "sources"
 	if max == 0 {
-		max = 3
+		max = 4
 	}
 	if n := len(sentence.FindAllString(reply+" ", -1)); n > max {
 		problems = append(problems, fmt.Sprintf("%d sentences", n))

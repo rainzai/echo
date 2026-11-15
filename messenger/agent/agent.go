@@ -116,7 +116,11 @@ func (a *Agent) Reply(ctx context.Context, t Turn) (string, error) {
 			return m.Text, nil
 		}
 
-		history = append(history, Message{Role: RoleTool, Result: &Result{Name: m.Call.Name, Data: a.run(ctx, t, m.Call)}})
+		data := a.run(ctx, t, m.Call)
+		if data["error"] == nil && !checked(history) {
+			data["mention_sources"] = true
+		}
+		history = append(history, Message{Role: RoleTool, Result: &Result{Name: m.Call.Name, Data: data}})
 	}
 	return "", errors.New("too many tool calls")
 }
@@ -149,6 +153,16 @@ func (a *Agent) run(ctx context.Context, t Turn, c *Call) map[string]any {
 		return map[string]any{"error": "the price check failed"}
 	}
 	return facts(req, res)
+}
+
+// checked tells if the chat already had a check that found a price
+func checked(history []Message) bool {
+	for _, m := range history {
+		if m.Result != nil && m.Result.Data["error"] == nil {
+			return true
+		}
+	}
+	return false
 }
 
 // trim never cuts a tool call off from its result

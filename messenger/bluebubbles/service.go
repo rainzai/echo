@@ -56,7 +56,7 @@ type Service struct {
 	seen    map[string]struct{}
 	inboxes map[string][]Message
 	lastIn  map[string]time.Time
-	sources map[string][]check.Source
+	sources map[string]check.Result
 }
 
 func NewService(client *Client, checker Checker, agent *agent.Agent) *Service {
@@ -67,7 +67,7 @@ func NewService(client *Client, checker Checker, agent *agent.Agent) *Service {
 		seen:    make(map[string]struct{}),
 		inboxes: make(map[string][]Message),
 		lastIn:  make(map[string]time.Time),
-		sources: make(map[string][]check.Source),
+		sources: make(map[string]check.Result),
 	}
 }
 
@@ -201,7 +201,7 @@ func (s *Service) talk(ctx context.Context, chat string, msgs []Message) bool {
 				log.Printf("checked query=%q country=%s name=%q price=%.2f url=%s", req.Query, req.Country, res.Name, res.Price, res.URL)
 				checked = &res
 				s.mu.Lock()
-				s.sources[chat] = res.Sources
+				s.sources[chat] = res
 				s.mu.Unlock()
 			}
 			return res, err

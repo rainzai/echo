@@ -2,7 +2,9 @@ package reply
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
+	"time"
 
 	"messenger/check"
 )
@@ -29,16 +31,54 @@ func Verdict(r check.Result) string {
 	return strings.TrimSpace(b.String())
 }
 
-func Sources(sources []check.Source) string {
-	if len(sources) == 0 {
+// Sources shows the prices behind the last check, with the page each one came from
+func Sources(r check.Result) string {
+	if r.URL == "" {
 		return "I don't have any links yet. Send me a product first!"
 	}
 
 	var b strings.Builder
-	for _, s := range sources {
-		fmt.Fprintf(&b, "%s\n%s\n\n", s.Label, s.URL)
+	fmt.Fprintf(&b, "%s at %s\n", r.Name, shop(r.URL))
+	for i, p := range r.History {
+		now := ""
+		if i == len(r.History)-1 {
+			now = " (now)"
+		}
+		fmt.Fprintf(&b, "%s: %s%s\n", day(p.Date), price(p.Price, r.Currency), now)
+	}
+	if len(r.History) == 0 {
+		fmt.Fprintf(&b, "now: %s\n", price(r.Price, r.Currency))
+	}
+	fmt.Fprintf(&b, "%s\n", r.URL)
+
+	if len(r.Elsewhere) > 0 {
+		b.WriteString("\nOther shops\n")
+		for _, o := range r.Elsewhere {
+			unsure := ""
+			if o.Doubt != "" {
+				unsure = " (price unsure)"
+			}
+			fmt.Fprintf(&b, "%s: %s%s\n%s\n", o.Shop, price(o.Price, r.Currency), unsure, o.URL)
+		}
 	}
 	return strings.TrimSpace(b.String())
+}
+
+// day turns 2026-08-16 into 16 Aug
+func day(date string) string {
+	t, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return date
+	}
+	return t.Format("2 Jan")
+}
+
+func shop(link string) string {
+	u, err := url.Parse(link)
+	if err != nil {
+		return link
+	}
+	return strings.TrimPrefix(u.Hostname(), "www.")
 }
 
 func price(p float64, currency string) string {
