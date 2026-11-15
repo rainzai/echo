@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"fmt"
 	"math"
 	"net/url"
 	"strings"
@@ -85,6 +86,22 @@ func facts(req check.Request, r check.Result) map[string]any {
 		f["price_check"] = "no older prices found to compare"
 	}
 
+	// 30 days is what the eu discount rule uses, the history goes back 90 days for the bigger picture
+	if len(r.History) > 1 {
+		var points []string
+		for _, p := range r.History {
+			points = append(points, fmt.Sprintf("%s: %.2f", p.Date, p.Price))
+		}
+		f["price_history"] = points
+		low, when := lowest(r.History, r.Price)
+		f["lowest_in_history"] = low
+		if when == "" {
+			f["history_check"] = "today is the lowest price in the whole history"
+		} else {
+			f["history_check"] = "it was cheaper on " + when
+		}
+	}
+
 	if r.ClaimedPrice != nil || r.ClaimedDiscount != nil {
 		if r.ClaimedPrice != nil {
 			f["claimed_old_price"] = *r.ClaimedPrice
@@ -114,6 +131,17 @@ func facts(req check.Request, r check.Result) map[string]any {
 		f["cheaper_elsewhere"] = cheaper
 	}
 	return f
+}
+
+// lowest finds the cheapest earlier point in the history, empty when today is the cheapest
+func lowest(history []check.PricePoint, now float64) (float64, string) {
+	low, when := now, ""
+	for _, p := range history {
+		if p.Price > 0 && p.Price < low {
+			low, when = p.Price, p.Date
+		}
+	}
+	return low, when
 }
 
 var doubts = map[string]string{

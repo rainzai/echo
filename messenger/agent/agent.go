@@ -14,8 +14,8 @@ import (
 	"messenger/check"
 )
 
-// keeps the last few turns per chat, lost on restart
-const maxHistory = 30
+// keeps the last turns per chat, lost on restart. a check takes three messages
+const maxHistory = 100
 
 // a turn can ask for a few checks before it answers
 const maxCalls = 3

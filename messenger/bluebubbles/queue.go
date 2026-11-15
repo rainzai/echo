@@ -9,6 +9,7 @@ func (s *Service) enqueue(m Message) {
 	s.mu.Lock()
 	_, running := s.inboxes[chat]
 	s.inboxes[chat] = append(s.inboxes[chat], m)
+	s.lastIn[chat] = time.Now()
 	s.mu.Unlock()
 
 	if !running {
@@ -16,16 +17,21 @@ func (s *Service) enqueue(m Message) {
 	}
 }
 
-// a link sent from a mac arrives as two messages, waiting a moment answers them together
-const gather = 1500 * time.Millisecond
+// people send a question in pieces, and a mac splits a link from its text,
+// so answer once the chat has been quiet for a moment
+const (
+	quiet   = 3 * time.Second
+	maxWait = 8 * time.Second
+)
 
 func (s *Service) work(chat string) {
-	time.Sleep(gather)
 	for {
+		s.settle(chat)
 		s.mu.Lock()
 		msgs := s.inboxes[chat]
 		if len(msgs) == 0 {
 			delete(s.inboxes, chat)
+			delete(s.lastIn, chat)
 			s.mu.Unlock()
 			return
 		}
@@ -33,5 +39,18 @@ func (s *Service) work(chat string) {
 		s.mu.Unlock()
 
 		s.reply(chat, msgs)
+	}
+}
+
+func (s *Service) settle(chat string) {
+	start := time.Now()
+	for time.Since(start) < maxWait {
+		s.mu.Lock()
+		since := time.Since(s.lastIn[chat])
+		s.mu.Unlock()
+		if since >= quiet {
+			return
+		}
+		time.Sleep(quiet - since)
 	}
 }

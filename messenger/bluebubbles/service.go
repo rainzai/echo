@@ -55,6 +55,7 @@ type Service struct {
 	mu      sync.Mutex
 	seen    map[string]struct{}
 	inboxes map[string][]Message
+	lastIn  map[string]time.Time
 	sources map[string][]check.Source
 }
 
@@ -65,6 +66,7 @@ func NewService(client *Client, checker Checker, agent *agent.Agent) *Service {
 		agent:   agent,
 		seen:    make(map[string]struct{}),
 		inboxes: make(map[string][]Message),
+		lastIn:  make(map[string]time.Time),
 		sources: make(map[string][]check.Source),
 	}
 }
