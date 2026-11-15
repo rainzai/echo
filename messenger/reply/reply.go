@@ -38,7 +38,7 @@ func Sources(r check.Result) string {
 	}
 
 	var b strings.Builder
-	fmt.Fprintf(&b, "%s at %s\n", r.Name, shop(r.URL))
+	fmt.Fprintf(&b, "%s at %s\n", trimShop(r.Name, shop(r.URL)), shop(r.URL))
 	for i, p := range r.History {
 		now := ""
 		if i == len(r.History)-1 {
@@ -62,6 +62,17 @@ func Sources(r check.Result) string {
 		}
 	}
 	return strings.TrimSpace(b.String())
+}
+
+// trimShop drops a shop name that page titles add, "Ryzen 7 - Jimms.fi" becomes "Ryzen 7"
+func trimShop(name, host string) string {
+	brand := strings.Split(host, ".")[0]
+	for _, sep := range []string{" - ", " | "} {
+		if i := strings.LastIndex(name, sep); i > 0 && strings.Contains(strings.ToLower(name[i:]), brand) {
+			return name[:i]
+		}
+	}
+	return name
 }
 
 // day turns 2026-08-16 into 16 Aug
