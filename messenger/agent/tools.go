@@ -72,15 +72,15 @@ func facts(req check.Request, r check.Result) map[string]any {
 	low := r.Low30d
 	if low != nil && *low > 0 {
 		pct := (r.Price - *low) / *low * 100
-		f["lowest_30_days"] = *low
-		f["percent_above_lowest"] = math.Round(pct*10) / 10
+		f["lowest_in_30_days_before_today"] = *low
+		f["percent_vs_that_low"] = math.Round(pct*10) / 10
 		switch {
 		case pct <= -3:
-			f["price_check"] = "real drop: clearly below the lowest price of the last 30 days"
+			f["price_check"] = "real drop: cheaper than it ever was in the 30 days before today"
 		case pct < 3:
-			f["price_check"] = "normal price: about the same as the lowest price of the last 30 days"
+			f["price_check"] = "normal price: about what it cost at its cheapest in the 30 days before today"
 		default:
-			f["price_check"] = "not a deal: it was cheaper in the last 30 days"
+			f["price_check"] = "not a deal: it was cheaper at some point in the 30 days before today"
 		}
 	} else {
 		f["price_check"] = "no older prices found to compare"
@@ -113,9 +113,9 @@ func facts(req check.Request, r check.Result) map[string]any {
 		case low == nil:
 			f["claim_check"] = "can't verify the discount, no older prices found"
 		case *low <= r.Price*1.03:
-			f["claim_check"] = "the discount isn't real: it was this price or cheaper in the last 30 days"
+			f["claim_check"] = "the discount isn't real: it already cost this or less in the 30 days before today"
 		default:
-			f["claim_check"] = "the discount is real: it's below the lowest price of the last 30 days"
+			f["claim_check"] = "the discount is real: it's cheaper than it ever was in the 30 days before today"
 		}
 	}
 
