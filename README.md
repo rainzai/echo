@@ -49,7 +49,7 @@ The steps run in order for every message.
 
 ## Privacy
 
-Echo keeps each chat in memory only, and forgets it on restart. Like any iMessage, the messages and photos also live in Messages on the Mac that runs Echo, and the log shows message text. To answer, message text goes to Gemini, photos to Nemotron and product names to Exa. Everything on the Mac is deleted after the event.
+Echo keeps each chat in memory only, and forgets it on restart. Like any iMessage, the messages and photos also live in Messages on the Mac that runs Echo, and the log shows message text. To answer, message text goes to Gemini, photos to Nemotron and product names to Exa.
 
 ## Evals
 
