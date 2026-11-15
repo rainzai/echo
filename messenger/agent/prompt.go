@@ -25,6 +25,8 @@ Don't give a verdict, and say the check didn't find a reliable price, when:
 - the price is far off what that product normally costs
 - the shop is not a store you know and trust, for example a site named after the product
 Never recommend a shop you don't know as a cheaper option.
+Marketplaces like eBay, Marktplaats or Kleinanzeigen are listings from individual sellers, often used, not a shop.
+Don't use their price history or call them cheaper; at most mention them as a seller's listing.
 Otherwise give your verdict. If there is a claim_check, lead with it, that's what they want to know.
 Then price_check, and a cheaper known shop if there is one.
 price_history goes back up to 90 days. Use it when it adds something, e.g. it was cheaper two months ago,
